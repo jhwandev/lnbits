@@ -44,6 +44,39 @@
                 :callback="updateBalanceCallback"
                 round
               />
+<!--               
+              <q-btn
+                v-if="'{{user.super_user}}' == 'True'"
+                flat
+                round
+                color="primary"
+                icon="add"
+                size="md"
+              >
+                <q-popup-edit
+                  class="bg-accent text-white"
+                  v-slot="scope"
+                  v-model="credit"
+                >
+                  <q-input
+                    filled
+                    :label='$t("credit_label", { denomination: "{{LNBITS_DENOMINATION}}"})'
+                    :hint="$t('credit_hint')"
+                    v-model="scope.value"
+                    dense
+                    autofocus
+                    :mask="'{{LNBITS_DENOMINATION}}' != 'sats' ? '#.##' : '#'"
+                    fill-mask="0"
+                    reverse-fill-mask
+                    :step="'{{LNBITS_DENOMINATION}}' != 'sats' ? '0.01' : '1'"
+                    @keyup.enter="updateBalance(scope.value)"
+                  >
+                    <template v-slot:append>
+                      <q-icon name="edit" />
+                    </template>
+                  </q-input>
+                </q-popup-edit>
+              </q-btn> -->
             </h3>
             <div class="row">
               <div class="col">
@@ -519,7 +552,7 @@
               :label="$t('unit')"
               :options="receive.units"
             ></q-select>
-            <q-input
+            <!-- <q-input
               ref="setAmount"
               filled
               dense
@@ -529,6 +562,21 @@
               fill-mask="0"
               reverse-fill-mask
               :step="receive.unit != 'sat' ? '0.01' : '1'"
+              :min="receive.minMax[0]"
+              :max="receive.minMax[1]"
+              :readonly="receive.lnurl && receive.lnurl.fixed"
+            ></q-input> -->
+            <!-- mask, step : sat단위 아닐경우 표기방법 변경 -->
+            <q-input
+              ref="setAmount"
+              filled
+              dense
+              v-model.number="receive.data.amount"
+              :label="$t('amount') + ' (' + receive.unit + ') *'"
+              :mask="receive.unit != 'sat' ? '#' : '#'"
+              fill-mask="0"
+              reverse-fill-mask
+              :step="receive.unit != 'sat' ? '1' : '1'"
               :min="receive.minMax[0]"
               :max="receive.minMax[1]"
               :readonly="receive.lnurl && receive.lnurl.fixed"
@@ -597,28 +645,41 @@
         </q-card>
       </q-dialog>
 
+      <!-- 인보이스 결제 dialog -->
       <q-dialog v-model="parse.show" @hide="closeParseDialog" position="top">
         <q-card class="q-pa-lg q-pt-xl lnbits__dialog-card">
           <div v-if="parse.invoice">
-            <h6
-              v-if="'{{LNBITS_DENOMINATION}}' != 'sats'"
-              class="q-my-none"
-              v-text="parseFloat(String(parse.invoice.fsat).replaceAll(',', '')) / 100 + '{{LNBITS_DENOMINATION}}'"
-            ></h6>
-            <h6
-              v-else
-              class="q-my-none"
-              v-text="parse.invoice.fsat + '{{LNBITS_DENOMINATION}}'"
-            ></h6>
+            <!-- 총액 -->
+            <h3 class="q-my-none" v-text="parse.invoice.totalSat + 'sats'"></h3>
+
+            <span
+              class="text-h5 text-italic"
+              v-text="paymentBalance"
+              style="opacity: 0.75"
+            ></span>
+
             <q-separator class="q-my-sm"></q-separator>
             <p class="text-wrap">
-              <strong v-text="$t('memo') + ': '"></strong>
+              <strong>지불후잔액 : </strong>
+              <span v-text="parse.invoice.balanceAfterPayment + 'sats'"></span>
+              <br />
+              <strong>지불금액 : </strong>
+              <span
+                v-text="parse.invoice.fsat + '{{LNBITS_DENOMINATION}}'"
+              ></span>
+              <br />
+              <strong>수수료(1%) : </strong>
+              <span
+                v-text="parseFloat(String(parse.invoice.fee).replaceAll(',', '')) + 'sats'"
+              ></span>
+              <q-separator class="q-my-sm"></q-separator>
+              <strong>메모 : </strong>
               <span v-text="parse.invoice.description"></span>
               <br />
-              <strong>Expire date: </strong>
+              <strong>만료일자: </strong>
               <span v-text="parse.invoice.expireDate"></span>
               <br />
-              <strong>Hash: </strong>
+              <strong>결제 해쉬값: </strong>
               <span v-text="parse.invoice.hash"></span>
             </p>
             <div v-if="canPay" class="row q-mt-lg">

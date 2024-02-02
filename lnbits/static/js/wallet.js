@@ -150,7 +150,7 @@ new Vue({
           descending: true,
           rowsNumber: 10
         },
-        search: null,
+        filter: null,
         loading: false
       },
       paymentsCSV: {
@@ -243,6 +243,7 @@ new Vue({
       },
       balance: 0,
       fiatBalance: 0,
+      paymentBalance: 0, // paymentBalance 계산
       mobileSimple: false,
       credit: 0,
       update: {
@@ -268,7 +269,7 @@ new Vue({
       }
     },
     filteredPayments: function () {
-      var q = this.paymentsTable.search
+      var q = this.paymentsTable.filter
       if (!q || q === '') return this.payments
 
       return LNbits.utils.search(this.payments, q)
@@ -351,6 +352,33 @@ new Vue({
       this.parse.data.paymentChecker = null
       this.parse.camera.show = false
       this.focusInput('textArea')
+    },
+    updateBalance: function (credit) {
+      LNbits.api
+        .request(
+          'PUT',
+          '/admin/api/v1/topup/',
+          this.g.user.wallets[0].adminkey,
+          {
+            amount: credit,
+            id: this.g.wallet.id
+          }
+        )
+        .then(response => {
+          this.$q.notify({
+            type: 'positive',
+            message:
+              'Success! Added ' +
+              credit +
+              ' sats to ' +
+              this.g.user.wallets[0].id,
+            icon: null
+          })
+          this.balance += parseInt(credit)
+        })
+        .catch(function (error) {
+          LNbits.utils.notifyApiError(error)
+        })
     },
     closeParseDialog: function () {
       setTimeout(() => {
@@ -449,6 +477,7 @@ new Vue({
       this.decodeRequest()
       this.parse.camera.show = false
     },
+    // # 요청 디코딩 --
     decodeRequest: function () {
       this.parse.show = true
       let req = this.parse.data.request.toLowerCase()
@@ -539,10 +568,32 @@ new Vue({
         return
       }
 
+      let msatAmount = invoice.human_readable_part.amount
+
+      let feeRate = 0.01 // TODO : 설정에서 불러오기
+      let maxFee = 100 // TODO : 설정에서 불러오기
+      let serviceFee = (msatAmount / 1000) * feeRate
+
+      console.log('serviceFee : ' + serviceFee)
+      console.log('maxFee : ' + maxFee)
+      if (serviceFee > maxFee) {
+        serviceFee = maxFee
+      } else {
+      }
+
+      let totalSat = msatAmount / 1000 + serviceFee
+      this.updatePaymentBalance(totalSat)
+
+      let balanceAfterPayment = Number(this.balance) - Number(totalSat)
+      console.log(balanceAfterPayment)
+
       let cleanInvoice = {
-        msat: invoice.human_readable_part.amount,
-        sat: invoice.human_readable_part.amount / 1000,
-        fsat: LNbits.utils.formatSat(invoice.human_readable_part.amount / 1000)
+        msat: msatAmount,
+        sat: msatAmount / 1000,
+        fsat: LNbits.utils.formatSat(msatAmount / 1000),
+        fee: serviceFee,
+        totalSat: LNbits.utils.formatSat(totalSat),
+        balanceAfterPayment: LNbits.utils.formatSat(balanceAfterPayment)
       }
 
       _.each(invoice.data.tags, tag => {
@@ -550,6 +601,7 @@ new Vue({
           if (tag.description === 'payment_hash') {
             cleanInvoice.hash = tag.value
           } else if (tag.description === 'description') {
+            // 이건가
             cleanInvoice.description = tag.value
           } else if (tag.description === 'expiry') {
             var expireDate = new Date(
@@ -564,8 +616,11 @@ new Vue({
         }
       })
 
+      //이곳에서 추가 가능
+
       this.parse.invoice = Object.freeze(cleanInvoice)
     },
+    // # 요청 디코딩 --
     payInvoice: function () {
       let dismissPaymentMsg = this.$q.notify({
         timeout: 0,
@@ -788,11 +843,26 @@ new Vue({
         })
         .catch(e => console.error(e))
     },
+    // paymentBalance 계산 - fiat
+    updatePaymentBalance(totalSatParam) {
+      if (!this.g.wallet.currency) return 0
+      LNbits.api
+        .request('POST', `/api/v1/conversion`, null, {
+          amount: totalSatParam,
+          to: this.g.wallet.currency
+        })
+        .then(response => {
+          let balance = response.data[this.g.wallet.currency].toFixed(2)
+          //  this.paymentBalance = formatFiat(this.g.wallet.currency, balance)
+          this.paymentBalance = LNbits.utils.formatCurrency(
+            balance,
+            this.g.wallet.currency
+          )
+        })
+        .catch(e => console.error(e))
+    },
     formatFiat(currency, amount) {
       return LNbits.utils.formatCurrency(amount, currency)
-    },
-    updateBalanceCallback: function (res) {
-      this.balance += res.value
     },
     exportCSV: function () {
       // status is important for export but it is not in paymentsTable
@@ -803,8 +873,7 @@ new Vue({
         sortby: pagination.sortBy ?? 'time',
         direction: pagination.descending ? 'desc' : 'asc'
       }
-      const params = new URLSearchParams(query)
-      LNbits.api.getPayments(this.g.wallet, params).then(response => {
+      LNbits.api.getPayments(this.g.wallet, query).then(response => {
         const payments = response.data.data.map(LNbits.map.payment)
         LNbits.utils.exportCSV(
           this.paymentsCSV.columns,
@@ -828,7 +897,10 @@ new Vue({
       this.showChart()
     }
   },
+
+  // 생성 - 월렛화면 호출시 동작
   created: function () {
+    console.log('created test')
     let urlParams = new URLSearchParams(window.location.search)
     if (urlParams.has('lightning') || urlParams.has('lnurl')) {
       this.parse.data.request =
