@@ -264,6 +264,8 @@ async def btc_price(currency: str) -> float:
         *[fetch_price(provider) for provider in exchange_rate_providers.values()],
         return_exceptions=True,
     )
+
+
     rates = [r for r in results if not isinstance(r, BaseException)]
 
     if not rates:
@@ -271,14 +273,23 @@ async def btc_price(currency: str) -> float:
     elif len(rates) == 1:
         logger.warning("Could only fetch one Bitcoin price.")
 
+
     return sum(rates) / len(rates)
 
-
+# 사토시 Fiat 환율
 async def get_fiat_rate_satoshis(currency: str) -> float:
-    price = await cache.save_result(
-        lambda: btc_price(currency), f"btc-price-{currency}"
-    )
-    return float(100_000_000 / price)
+
+    # KRW 예외처리
+    currencyUpper = currency.upper()
+    if currencyUpper == "KRW":
+        price = await btc_price_krw()
+        return float(100_000_000 / price)
+
+    else:    
+        price = await cache.save_result(
+            lambda: btc_price(currency), f"btc-price-{currency}"
+        )
+        return float(100_000_000 / price)
 
 
 async def fiat_amount_as_satoshis(amount: float, currency: str) -> int:
@@ -287,3 +298,21 @@ async def fiat_amount_as_satoshis(amount: float, currency: str) -> int:
 
 async def satoshis_amount_as_fiat(amount: float, currency: str) -> float:
     return float(amount / (await get_fiat_rate_satoshis(currency)))
+
+# BTC-KRW 가격조회 (업비트)
+async def btc_price_krw():
+    try:
+        url = "https://api.upbit.com/v1/ticker?markets=KRW-BTC"
+        headers = {"User-Agent": settings.user_agent}
+        async with httpx.AsyncClient(headers=headers) as client:
+            r = await client.get(url, timeout=0.5)
+            r.raise_for_status()
+            data = r.json()
+            btckrw = data[0]['trade_price']
+
+            return btckrw
+    except Exception as e:
+        logger.warning(
+            f"Failed to fetch BTC-KRW price "
+        )
+        raise
