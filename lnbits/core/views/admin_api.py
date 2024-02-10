@@ -3,7 +3,7 @@ import time
 from http import HTTPStatus
 from shutil import make_archive
 from subprocess import Popen
-from typing import Optional
+from typing import Optional, List
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, Depends
@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from starlette.exceptions import HTTPException
 
 from lnbits.core.crud import get_wallet
-from lnbits.core.models import CreateTopup, User
+from lnbits.core.models import CreateTopup, User, UserConfig
 from lnbits.core.services import (
     get_balance_delta,
     update_cached_settings,
@@ -22,9 +22,22 @@ from lnbits.server import server_restart
 from lnbits.settings import AdminSettings, UpdateSettings, settings
 
 from .. import core_app_extra
-from ..crud import delete_admin_settings, get_admin_settings, update_admin_settings
+from ..crud import delete_admin_settings, get_admin_settings, update_admin_settings, get_kyc_requests, update_account
 
 admin_router = APIRouter()
+
+
+@admin_router.get("/admin/api/v1/kyc", 
+    response_model=List[User],
+    dependencies=[Depends(check_admin)],)
+async def api_get_kyc_requests():
+    return await get_kyc_requests()
+
+@admin_router.put("/admin/api/v1/kyc/{id}",
+    dependencies=[Depends(check_admin)],)
+async def api_verify_kyc_request(user_id: str, verified: bool = True):
+    await update_account(user_id, None, None, UserConfig(kyc_status="verified" if verified else "required"))
+    return {"status": "Success"}
 
 
 @admin_router.get(
