@@ -90,6 +90,8 @@ new Vue({
   mixins: [windowMixin],
   data: function () {
     return {
+      lnbitsServiceFee: null,
+      lnbitsServiceFeeMax: null,
       user: LNbits.map.user(window.user),
       receive: {
         show: false,
@@ -243,7 +245,8 @@ new Vue({
       },
       balance: 0,
       fiatBalance: 0,
-      paymentBalance: 0, // paymentBalance 계산
+      paymentBalance: null,
+      bitcoinPriceKrw: null,
       mobileSimple: false,
       credit: 0,
       update: {
@@ -262,10 +265,7 @@ new Vue({
     },
     formattedFiatBalance() {
       if (this.fiatBalance) {
-        return LNbits.utils.formatCurrency(
-          this.fiatBalance.toFixed(2),
-          this.g.wallet.currency
-        )
+        return LNbits.utils.formatCurrency(this.fiatBalance.toFixed(2), this.g.wallet.currency)
       }
     },
     filteredPayments: function () {
@@ -304,20 +304,13 @@ new Vue({
     showChart: function () {
       this.paymentsChart.show = true
       LNbits.api
-        .request(
-          'GET',
-          '/api/v1/payments/history?group=' + this.paymentsChart.group.value,
-          this.g.wallet.adminkey
-        )
+        .request('GET', '/api/v1/payments/history?group=' + this.paymentsChart.group.value, this.g.wallet.adminkey)
         .then(response => {
           this.$nextTick(() => {
             if (this.paymentsChart.instance) {
               this.paymentsChart.instance.destroy()
             }
-            this.paymentsChart.instance = generateChart(
-              this.$refs.canvas,
-              response.data
-            )
+            this.paymentsChart.instance = generateChart(this.$refs.canvas, response.data)
           })
         })
         .catch(err => {
@@ -345,8 +338,7 @@ new Vue({
       this.parse.invoice = null
       this.parse.lnurlpay = null
       this.parse.lnurlauth = null
-      this.parse.copy.show =
-        window.isSecureContext && navigator.clipboard?.readText !== undefined
+      this.parse.copy.show = window.isSecureContext && navigator.clipboard?.readText !== undefined
       this.parse.data.request = ''
       this.parse.data.comment = ''
       this.parse.data.paymentChecker = null
@@ -355,23 +347,14 @@ new Vue({
     },
     updateBalance: function (credit) {
       LNbits.api
-        .request(
-          'PUT',
-          '/admin/api/v1/topup/',
-          this.g.user.wallets[0].adminkey,
-          {
-            amount: credit,
-            id: this.g.wallet.id
-          }
-        )
+        .request('PUT', '/admin/api/v1/topup/', this.g.user.wallets[0].adminkey, {
+          amount: credit,
+          id: this.g.wallet.id
+        })
         .then(response => {
           this.$q.notify({
             type: 'positive',
-            message:
-              'Success! Added ' +
-              credit +
-              ' sats to ' +
-              this.g.user.wallets[0].id,
+            message: 'Success! Added ' + credit + ' sats to ' + this.g.user.wallets[0].id,
             icon: null
           })
           this.balance += parseInt(credit)
@@ -450,21 +433,16 @@ new Vue({
         let mapping = {
           NotAllowedError: 'ERROR: you need to grant camera access permission',
           NotFoundError: 'ERROR: no camera on this device',
-          NotSupportedError:
-            'ERROR: secure context required (HTTPS, localhost)',
+          NotSupportedError: 'ERROR: secure context required (HTTPS, localhost)',
           NotReadableError: 'ERROR: is the camera already in use?',
           OverconstrainedError: 'ERROR: installed cameras are not suitable',
-          StreamApiNotSupportedError:
-            'ERROR: Stream API is not supported in this browser',
-          InsecureContextError:
-            'ERROR: Camera access is only permitted in secure context. Use HTTPS or localhost rather than HTTP.'
+          StreamApiNotSupportedError: 'ERROR: Stream API is not supported in this browser',
+          InsecureContextError: 'ERROR: Camera access is only permitted in secure context. Use HTTPS or localhost rather than HTTP.'
         }
         let valid_error = Object.keys(mapping).filter(key => {
           return error.name === key
         })
-        let camera_error = valid_error
-          ? mapping[valid_error]
-          : `ERROR: Camera error (${error.name})`
+        let camera_error = valid_error ? mapping[valid_error] : `ERROR: Camera error (${error.name})`
         this.parse.camera.show = false
         this.$q.notify({
           message: camera_error,
@@ -486,21 +464,12 @@ new Vue({
       } else if (this.parse.data.request.toLowerCase().startsWith('lnurl:')) {
         this.parse.data.request = this.parse.data.request.slice(6)
       } else if (req.indexOf('lightning=lnurl1') !== -1) {
-        this.parse.data.request = this.parse.data.request
-          .split('lightning=')[1]
-          .split('&')[0]
+        this.parse.data.request = this.parse.data.request.split('lightning=')[1].split('&')[0]
       }
 
-      if (
-        this.parse.data.request.toLowerCase().startsWith('lnurl1') ||
-        this.parse.data.request.match(/[\w.+-~_]+@[\w.+-~_]/)
-      ) {
+      if (this.parse.data.request.toLowerCase().startsWith('lnurl1') || this.parse.data.request.match(/[\w.+-~_]+@[\w.+-~_]/)) {
         LNbits.api
-          .request(
-            'GET',
-            '/api/v1/lnurlscan/' + this.parse.data.request,
-            this.g.wallet.adminkey
-          )
+          .request('GET', '/api/v1/lnurlscan/' + this.parse.data.request, this.g.wallet.adminkey)
           .catch(err => {
             LNbits.utils.notifyApiError(err)
           })
@@ -530,10 +499,7 @@ new Vue({
               this.receive.paymentHash = null
               this.receive.data.amount = data.maxWithdrawable / 1000
               this.receive.data.memo = data.defaultDescription
-              this.receive.minMax = [
-                data.minWithdrawable / 1000,
-                data.maxWithdrawable / 1000
-              ]
+              this.receive.minMax = [data.minWithdrawable / 1000, data.maxWithdrawable / 1000]
               this.receive.lnurl = {
                 domain: data.domain,
                 callback: data.callback,
@@ -569,23 +535,24 @@ new Vue({
       }
 
       let msatAmount = invoice.human_readable_part.amount
+      let feeRate = this.lnbitsServiceFee
+      let maxFee = this.lnbitsServiceFeeMax
+      let serviceFee = Math.floor((msatAmount / 1000) * feeRate)
 
-      let feeRate = 0.01 // TODO : 설정에서 불러오기
-      let maxFee = 100 // TODO : 설정에서 불러오기
-      let serviceFee = (msatAmount / 1000) * feeRate
-
-      console.log('serviceFee : ' + serviceFee)
-      console.log('maxFee : ' + maxFee)
+      // 최대 수수료 제한
       if (serviceFee > maxFee) {
         serviceFee = maxFee
-      } else {
+      }
+
+      // 1 sat 이하의 수수료는 0으로 처리
+      if (serviceFee < 1) {
+        serviceFee = 0
       }
 
       let totalSat = msatAmount / 1000 + serviceFee
       this.updatePaymentBalance(totalSat)
 
       let balanceAfterPayment = Number(this.balance) - Number(totalSat)
-      console.log(balanceAfterPayment)
 
       let cleanInvoice = {
         msat: msatAmount,
@@ -604,13 +571,8 @@ new Vue({
             // 이건가
             cleanInvoice.description = tag.value
           } else if (tag.description === 'expiry') {
-            var expireDate = new Date(
-              (invoice.data.time_stamp + tag.value) * 1000
-            )
-            cleanInvoice.expireDate = Quasar.utils.date.formatDate(
-              expireDate,
-              'YYYY-MM-DDTHH:mm:ss.SSSZ'
-            )
+            var expireDate = new Date((invoice.data.time_stamp + tag.value) * 1000)
+            cleanInvoice.expireDate = Quasar.utils.date.formatDate(expireDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
             cleanInvoice.expired = false // TODO
           }
         }
@@ -635,17 +597,15 @@ new Vue({
             clearInterval(this.parse.paymentChecker)
           }, 40000)
           this.parse.paymentChecker = setInterval(() => {
-            LNbits.api
-              .getPayment(this.g.wallet, response.data.payment_hash)
-              .then(res => {
-                if (res.data.paid) {
-                  this.parse.show = false
-                  clearInterval(this.parse.paymentChecker)
-                  dismissPaymentMsg()
-                  this.fetchPayments()
-                  this.fetchBalance()
-                }
-              })
+            LNbits.api.getPayment(this.g.wallet, response.data.payment_hash).then(res => {
+              if (res.data.paid) {
+                this.parse.show = false
+                clearInterval(this.parse.paymentChecker)
+                dismissPaymentMsg()
+                this.fetchPayments()
+                this.fetchBalance()
+              }
+            })
           }, 2000)
         })
         .catch(err => {
@@ -677,60 +637,53 @@ new Vue({
             clearInterval(this.parse.paymentChecker)
           }, 40000)
           this.parse.paymentChecker = setInterval(() => {
-            LNbits.api
-              .getPayment(this.g.wallet, response.data.payment_hash)
-              .then(res => {
-                if (res.data.paid) {
-                  dismissPaymentMsg()
-                  clearInterval(this.parse.paymentChecker)
-                  this.fetchPayments()
-                  this.fetchBalance()
+            LNbits.api.getPayment(this.g.wallet, response.data.payment_hash).then(res => {
+              if (res.data.paid) {
+                dismissPaymentMsg()
+                clearInterval(this.parse.paymentChecker)
+                this.fetchPayments()
+                this.fetchBalance()
 
-                  // show lnurlpay success action
-                  if (response.data.success_action) {
-                    switch (response.data.success_action.tag) {
-                      case 'url':
-                        this.$q.notify({
-                          message: `<a target="_blank" style="color: inherit" href="${response.data.success_action.url}">${response.data.success_action.url}</a>`,
-                          caption: response.data.success_action.description,
-                          html: true,
-                          type: 'positive',
-                          timeout: 0,
-                          closeBtn: true
-                        })
-                        break
-                      case 'message':
-                        this.$q.notify({
-                          message: response.data.success_action.message,
-                          type: 'positive',
-                          timeout: 0,
-                          closeBtn: true
-                        })
-                        break
-                      case 'aes':
-                        LNbits.api
-                          .getPayment(this.g.wallet, response.data.payment_hash)
-                          .then(({data: payment}) =>
-                            decryptLnurlPayAES(
-                              response.data.success_action,
-                              payment.preimage
-                            )
-                          )
-                          .then(value => {
-                            this.$q.notify({
-                              message: value,
-                              caption: response.data.success_action.description,
-                              html: true,
-                              type: 'positive',
-                              timeout: 0,
-                              closeBtn: true
-                            })
+                // show lnurlpay success action
+                if (response.data.success_action) {
+                  switch (response.data.success_action.tag) {
+                    case 'url':
+                      this.$q.notify({
+                        message: `<a target="_blank" style="color: inherit" href="${response.data.success_action.url}">${response.data.success_action.url}</a>`,
+                        caption: response.data.success_action.description,
+                        html: true,
+                        type: 'positive',
+                        timeout: 0,
+                        closeBtn: true
+                      })
+                      break
+                    case 'message':
+                      this.$q.notify({
+                        message: response.data.success_action.message,
+                        type: 'positive',
+                        timeout: 0,
+                        closeBtn: true
+                      })
+                      break
+                    case 'aes':
+                      LNbits.api
+                        .getPayment(this.g.wallet, response.data.payment_hash)
+                        .then(({data: payment}) => decryptLnurlPayAES(response.data.success_action, payment.preimage))
+                        .then(value => {
+                          this.$q.notify({
+                            message: value,
+                            caption: response.data.success_action.description,
+                            html: true,
+                            type: 'positive',
+                            timeout: 0,
+                            closeBtn: true
                           })
-                        break
-                    }
+                        })
+                      break
                   }
                 }
-              })
+              }
+            })
           }, 2000)
         })
         .catch(err => {
@@ -785,23 +738,21 @@ new Vue({
         })
     },
     deleteWallet: function () {
-      LNbits.utils
-        .confirmDialog('Are you sure you want to delete this wallet?')
-        .onOk(() => {
-          LNbits.api
-            .deleteWallet(this.g.wallet)
-            .then(_ => {
-              this.$q.notify({
-                timeout: 3000,
-                message: `Wallet deleted!`,
-                spinner: true
-              })
+      LNbits.utils.confirmDialog('Are you sure you want to delete this wallet?').onOk(() => {
+        LNbits.api
+          .deleteWallet(this.g.wallet)
+          .then(_ => {
+            this.$q.notify({
+              timeout: 3000,
+              message: `Wallet deleted!`,
+              spinner: true
             })
-            .catch(err => {
-              this.paymentsTable.loading = false
-              LNbits.utils.notifyApiError(err)
-            })
-        })
+          })
+          .catch(err => {
+            this.paymentsTable.loading = false
+            LNbits.utils.notifyApiError(err)
+          })
+      })
     },
     fetchPayments: function (props) {
       const params = LNbits.utils.prepareFilterQuery(this.paymentsTable, props)
@@ -822,10 +773,7 @@ new Vue({
     fetchBalance: function () {
       LNbits.api.getWallet(this.g.wallet).then(response => {
         this.balance = Math.floor(response.data.balance / 1000)
-        EventHub.$emit('update-wallet-balance', [
-          this.g.wallet.id,
-          this.balance
-        ])
+        EventHub.$emit('update-wallet-balance', [this.g.wallet.id, this.balance])
       })
       if (this.g.wallet.currency) {
         this.updateFiatBalance()
@@ -852,12 +800,14 @@ new Vue({
           to: this.g.wallet.currency
         })
         .then(response => {
+          // 비트코인 가격 조회 (UPBIT-KRW)
+          if (this.g.wallet.currency === 'KRW') {
+            this.bitcoinPriceKrw = response.data['BTCKRW']
+          }
+
           let balance = response.data[this.g.wallet.currency].toFixed(2)
           //  this.paymentBalance = formatFiat(this.g.wallet.currency, balance)
-          this.paymentBalance = LNbits.utils.formatCurrency(
-            balance,
-            this.g.wallet.currency
-          )
+          this.paymentBalance = LNbits.utils.formatCurrency(balance, this.g.wallet.currency)
         })
         .catch(e => console.error(e))
     },
@@ -875,11 +825,7 @@ new Vue({
       }
       LNbits.api.getPayments(this.g.wallet, query).then(response => {
         const payments = response.data.data.map(LNbits.map.payment)
-        LNbits.utils.exportCSV(
-          this.paymentsCSV.columns,
-          payments,
-          this.g.wallet.name + '-payments'
-        )
+        LNbits.utils.exportCSV(this.paymentsCSV.columns, payments, this.g.wallet.name + '-payments')
       })
     },
     pasteToTextArea: function () {
@@ -900,11 +846,13 @@ new Vue({
 
   // 생성 - 월렛화면 호출시 동작
   created: function () {
-    console.log('created test')
+    // setting - 수수료 가져오기
+    this.lnbitsServiceFee = document.getElementById('settings').dataset.lnbitsServiceFee
+    this.lnbitsServiceFeeMax = document.getElementById('settings').dataset.lnbitsServiceFeeMax
+
     let urlParams = new URLSearchParams(window.location.search)
     if (urlParams.has('lightning') || urlParams.has('lnurl')) {
-      this.parse.data.request =
-        urlParams.get('lightning') || urlParams.get('lnurl')
+      this.parse.data.request = urlParams.get('lightning') || urlParams.get('lnurl')
       this.decodeRequest()
       this.parse.show = true
     }
@@ -934,16 +882,12 @@ new Vue({
     }
 
     // listen to incoming payments
-    LNbits.events.onInvoicePaid(this.g.wallet, payment =>
-      this.onPaymentReceived(payment.payment_hash)
-    )
+    LNbits.events.onInvoicePaid(this.g.wallet, payment => this.onPaymentReceived(payment.payment_hash))
   }
 })
 
 if (navigator.serviceWorker != null) {
-  navigator.serviceWorker
-    .register('/service-worker.js')
-    .then(function (registration) {
-      console.log('Registered events at scope: ', registration.scope)
-    })
+  navigator.serviceWorker.register('/service-worker.js').then(function (registration) {
+    console.log('Registered events at scope: ', registration.scope)
+  })
 }

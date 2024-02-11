@@ -2,7 +2,8 @@
 
 Vue.use(VueI18n)
 
-window.LOCALE = 'en'
+// 언어 기본값 한글
+window.LOCALE = 'kr'
 window.i18n = new VueI18n({
   locale: window.LOCALE,
   fallbackLocale: window.LOCALE,
@@ -459,6 +460,17 @@ window.windowMixin = {
   },
 
   methods: {
+    // 상단 타이틀에 언어변경 버튼 추가
+    activeLanguage: function (lang) {
+      return window.i18n.locale === lang
+    },
+    getLanguage: function () {
+      return window.i18n.locale
+    },
+    changeLanguage: function (newValue) {
+      window.i18n.locale = newValue
+      this.$q.localStorage.set('lnbits.lang', newValue)
+    },
     changeColor: function (newValue) {
       document.body.setAttribute('data-theme', newValue)
       this.$q.localStorage.set('lnbits.theme', newValue)
@@ -526,6 +538,7 @@ window.windowMixin = {
     this.g.allowedThemes = window.allowedThemes ?? ['bitcoin']
 
     let locale = this.$q.localStorage.getItem('lnbits.lang')
+
     if (locale) {
       window.LOCALE = locale
       window.i18n.locale = locale
@@ -543,6 +556,7 @@ window.windowMixin = {
 
     // failsafe if admin changes themes halfway
     if (!this.$q.localStorage.getItem('lnbits.theme')) {
+      console.log('no theme')
       this.changeColor(this.g.allowedThemes[0])
     }
     if (
@@ -551,6 +565,7 @@ window.windowMixin = {
         this.$q.localStorage.getItem('lnbits.theme')
       )
     ) {
+      console.log('wrong theme')
       this.changeColor(this.g.allowedThemes[0])
     }
 

@@ -71,6 +71,7 @@ from lnbits.utils.exchange_rates import (
     currencies,
     fiat_amount_as_satoshis,
     satoshis_amount_as_fiat,
+    btc_price_krw,
 )
 
 from ..crud import (
@@ -724,7 +725,15 @@ async def api_list_currencies_available():
 
 @api_router.post("/api/v1/conversion")
 async def api_fiat_as_sats(data: ConversionData):
+
     output = {}
+
+    # 비트코인 업비트 기준 현재가
+    if data.to == "KRW":
+        btc_price = await btc_price_krw()
+        output["BTCKRW"] = btc_price
+
+    # 사토시기준
     if data.from_ == "sat":
         output["BTC"] = data.amount / 100000000
         output["sats"] = int(data.amount)
@@ -733,6 +742,8 @@ async def api_fiat_as_sats(data: ConversionData):
                 data.amount, currency.strip()
             )
         return output
+    
+    # Fiat 기준
     else:
         output[data.from_.upper()] = data.amount
         output["sats"] = await fiat_amount_as_satoshis(data.amount, data.from_)

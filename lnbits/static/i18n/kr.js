@@ -81,7 +81,7 @@ window.localisation.kr = {
   scan: '스캔',
   read: '분석하기',
   pay: '지불하기',
-  memo: 'Memo',
+  memo: '메모',
   date: '일시',
   processing_payment: '결제 처리 중...',
   not_enough_funds: '자금이 부족합니다!',
@@ -227,5 +227,10 @@ window.localisation.kr = {
   auth_provider: '인증 제공자',
   my_account: '내 계정',
   back: '뒤로',
-  logout: '로그아웃'
+  logout: '로그아웃',
+  register_for_kyc: 'KYC 등록',
+  pending_for_kyc: 'KYC 대기중',
+  expire_date: '만료일',
+  balance_after_amount: '지불후 잔액',
+  payment_amount: '지불금액'
 }

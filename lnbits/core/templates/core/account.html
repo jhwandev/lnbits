@@ -232,17 +232,46 @@
                   </q-card-section>
                   <q-separator></q-separator>
                   <q-card-section>
-                    <q-btn @click="updateAccount" unelevated color="primary">
-                      <span v-text="$t('update_account')"></span>
-                    </q-btn>
+                    <!-- 비밀번호 변경 버튼 -->
                     <q-btn
+                      style="margin-top: 10px"
                       @click="showChangePassword()"
                       :label="user.has_password ? $t('change_password'): $t('set_password')"
                       outline
                       unelevated
                       color="grey"
-                      class="float-right"
+                      class="full-width"
                     ></q-btn>
+                    <!-- 계정 업데이트 버튼 -->
+                    <q-btn
+                      style="margin-top: 10px"
+                      @click="updateAccount"
+                      unelevated
+                      color="primary"
+                      class="full-width"
+                    >
+                      <span v-text="$t('update_account')"></span>
+                    </q-btn>
+                    <!-- KYC 인증하기 버튼 -->
+                    <q-btn
+                      v-if="1==2"
+                      style="margin-top: 10px"
+                      unelevated
+                      color="purple"
+                      class="full-width"
+                    >
+                      <span v-text="$t('register_for_kyc')"></span>
+                    </q-btn>
+                    <q-btn
+                      v-else
+                      style="margin-top: 10px"
+                      unelevated
+                      color="grey"
+                      class="full-width"
+                      disabled
+                    >
+                      <span v-text="$t('pending_for_kyc')"></span>
+                    </q-btn>
                   </q-card-section>
                 </div>
               </q-tab-panel>

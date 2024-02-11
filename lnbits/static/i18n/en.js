@@ -227,5 +227,10 @@ window.localisation.en = {
   logout: 'Logout',
   look_and_feel: 'Look and Feel',
   language: 'Language',
-  color_scheme: 'Color Scheme'
+  color_scheme: 'Color Scheme',
+  register_for_kyc: 'Register for KYC',
+  pending_for_kyc: 'KYC Pending',
+  expired_date: 'Expire date',
+  balance_after_amount: 'Balance after payment',
+  payment_amount: 'Payment amount'
 }
