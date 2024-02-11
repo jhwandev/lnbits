@@ -109,6 +109,12 @@
           >
             <span>OFFLINE</span>
           </q-badge>
+          <q-btn v-if="activeLanguage('en')" @click="changeLanguage('kr')"
+            >KR</q-btn
+          >
+          <q-btn v-if="activeLanguage('kr')" @click="changeLanguage('en')"
+            >EN</q-btn
+          >
 
           <q-btn-dropdown
             v-if="isUserAuthorized"
@@ -128,11 +134,12 @@
               </div>
             </template>
             <q-list>
+              <!-- my account -->
               <q-item tag="a" href="/account" clickable v-close-popup
-                ><q-item-section>
+                ><q-item-section style="min-width: 50px">
                   <q-icon name="person" />
                 </q-item-section>
-                <q-item-section>
+                <q-item-section style="min-width: 50px">
                   <q-item-label>
                     <span v-text="$t('my_account')"></span>
                   </q-item-label>
@@ -142,11 +149,12 @@
                 </q-item-section>
               </q-item>
               <q-separator></q-separator>
+              <!-- logout -->
               <q-item clickable v-close-popup @click="logout"
-                ><q-item-section>
+                ><q-item-section style="min-width: 50px">
                   <q-icon name="logout" />
                 </q-item-section>
-                <q-item-section>
+                <q-item-section style="min-width: 90px">
                   <q-item-label>
                     <span v-text="$t('logout')"></span>
                   </q-item-label>
@@ -247,20 +255,20 @@
       }
       window.langs = [
         { value: 'en', label: 'English', display: '🇬🇧 EN' },
-        { value: 'de', label: 'Deutsch', display: '🇩🇪 DE' },
-        { value: 'es', label: 'Español', display: '🇪🇸 ES' },
-        { value: 'jp', label: '日本語', display: '🇯🇵 JP' },
-        { value: 'cn', label: '中文', display: '🇨🇳 CN' },
-        { value: 'fr', label: 'Français', display: '🇫🇷 FR' },
-        { value: 'it', label: 'Italiano', display: '🇮🇹 IT' },
-        { value: 'pi', label: 'Pirate', display: '🏴‍☠️ PI' },
-        { value: 'nl', label: 'Nederlands', display: '🇳🇱 NL' },
-        { value: 'we', label: 'Cymraeg', display: '🏴󠁧󠁢󠁷󠁬󠁳󠁿 CY' },
-        { value: 'pl', label: 'Polski', display: '🇵🇱 PL' },
-        { value: 'pt', label: 'Português', display: '🇵🇹 PT' },
-        { value: 'br', label: 'Português do Brasil', display: '🇧🇷 BR' },
-        { value: 'cs', label: 'Česky', display: '🇨🇿 CS' },
-        { value: 'sk', label: 'Slovensky', display: '🇸🇰 SK' },
+        // { value: 'de', label: 'Deutsch', display: '🇩🇪 DE' },
+        // { value: 'es', label: 'Español', display: '🇪🇸 ES' },
+        // { value: 'jp', label: '日本語', display: '🇯🇵 JP' },
+        // { value: 'cn', label: '中文', display: '🇨🇳 CN' },
+        // { value: 'fr', label: 'Français', display: '🇫🇷 FR' },
+        // { value: 'it', label: 'Italiano', display: '🇮🇹 IT' },
+        // { value: 'pi', label: 'Pirate', display: '🏴‍☠️ PI' },
+        // { value: 'nl', label: 'Nederlands', display: '🇳🇱 NL' },
+        // { value: 'we', label: 'Cymraeg', display: '🏴󠁧󠁢󠁷󠁬󠁳󠁿 CY' },
+        // { value: 'pl', label: 'Polski', display: '🇵🇱 PL' },
+        // { value: 'pt', label: 'Português', display: '🇵🇹 PT' },
+        // { value: 'br', label: 'Português do Brasil', display: '🇧🇷 BR' },
+        // { value: 'cs', label: 'Česky', display: '🇨🇿 CS' },
+        // { value: 'sk', label: 'Slovensky', display: '🇸🇰 SK' },
         { value: 'kr', label: '한국어', display: '🇰🇷 KR' }
       ]
     </script>

@@ -9,6 +9,7 @@
 {% block title %} {{ wallet.name }} - {{ SITE_TITLE }} {% endblock %}
 <!---->
 {% block page %}
+<div id="settings" data-lnbits-service-fee="{{ LNBITS_SERVICE_FEE }}" data-lnbits-service-fee-max="{{ LNBITS_SERVICE_FEE_MAX }}"></div>
 <div class="row q-col-gutter-md">
   {% if HIDE_API and AD_SPACE %}
   <div class="col-12 col-md-8 q-gutter-y-md">
@@ -44,7 +45,7 @@
                 :callback="updateBalanceCallback"
                 round
               />
-<!--               
+              <!--               
               <q-btn
                 v-if="'{{user.super_user}}' == 'True'"
                 flat
@@ -81,11 +82,7 @@
             <div class="row">
               <div class="col">
                 <div v-if="g.wallet.currency">
-                  <span
-                    class="text-h5 text-italic"
-                    v-text="formattedFiatBalance"
-                    style="opacity: 0.75"
-                  ></span>
+                  <span class="text-h5 text-italic" v-text="formattedFiatBalance" style="opacity: 0.75"></span>
                 </div>
               </div>
               <div class="col">
@@ -103,34 +100,14 @@
           </q-card-section>
           <div class="row q-pb-md q-px-md q-col-gutter-md gt-sm">
             <div class="col">
-              <q-btn
-                unelevated
-                color="primary"
-                class="full-width"
-                @click="showParseDialog"
-                :label="$t('paste_request')"
-              ></q-btn>
+              <q-btn unelevated color="primary" class="full-width" @click="showParseDialog" :label="$t('paste_request')"></q-btn>
             </div>
             <div class="col">
-              <q-btn
-                unelevated
-                color="primary"
-                class="full-width"
-                @click="showReceiveDialog"
-                :label="$t('create_invoice')"
-              ></q-btn>
+              <q-btn unelevated color="primary" class="full-width" @click="showReceiveDialog" :label="$t('create_invoice')"></q-btn>
             </div>
             <div class="col">
-              <q-btn
-                unelevated
-                color="secondary"
-                icon="photo_camera"
-                @click="showCamera"
-                :label="$t('scan')"
-              >
-                <q-tooltip
-                  ><span v-text="$t('camera_tooltip')"></span
-                ></q-tooltip>
+              <q-btn unelevated color="secondary" icon="photo_camera" @click="showCamera" :label="$t('scan')">
+                <q-tooltip><span v-text="$t('camera_tooltip')"></span></q-tooltip>
               </q-btn>
             </div>
           </div>
@@ -146,29 +123,12 @@
           <q-card-section>
             <div class="row items-center no-wrap q-mb-sm">
               <div class="col">
-                <h5
-                  class="text-subtitle1 q-my-none"
-                  :v-text="$t('transactions')"
-                ></h5>
+                <h5 class="text-subtitle1 q-my-none" :v-text="$t('transactions')"></h5>
               </div>
               <div class="gt-sm col-auto">
-                <q-btn
-                  flat
-                  color="grey"
-                  @click="exportCSV"
-                  :label="$t('export_csv')"
-                ></q-btn>
-                <q-btn
-                  dense
-                  flat
-                  round
-                  icon="show_chart"
-                  color="grey"
-                  @click="showChart"
-                >
-                  <q-tooltip>
-                    <span v-text="$t('chart_tooltip')"></span
-                  ></q-tooltip>
+                <q-btn flat color="grey" @click="exportCSV" :label="$t('export_csv')"></q-btn>
+                <q-btn dense flat round icon="show_chart" color="grey" @click="showChart">
+                  <q-tooltip> <span v-text="$t('chart_tooltip')"></span></q-tooltip>
                 </q-btn>
               </div>
             </div>
@@ -202,12 +162,7 @@
               <template v-slot:header="props">
                 <q-tr :props="props">
                   <q-th auto-width></q-th>
-                  <q-th
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                    v-text="col.label"
-                  ></q-th>
+                  <q-th v-for="col in props.cols" :key="col.name" :props="props" v-text="col.label"></q-th>
                 </q-tr>
               </template>
               <template v-slot:body="props">
@@ -220,41 +175,20 @@
                       :color="props.row.isOut ? 'pink' : 'green'"
                       @click="props.expand = !props.expand"
                     ></q-icon>
-                    <q-icon
-                      v-else
-                      name="settings_ethernet"
-                      color="grey"
-                      @click="props.expand = !props.expand"
-                    >
-                      <q-tooltip
-                        ><span v-text="$t('pending')"></span
-                      ></q-tooltip>
+                    <q-icon v-else name="settings_ethernet" color="grey" @click="props.expand = !props.expand">
+                      <q-tooltip><span v-text="$t('pending')"></span></q-tooltip>
                     </q-icon>
                   </q-td>
-                  <q-td
-                    key="time"
-                    :props="props"
-                    style="white-space: normal; word-break: break-all"
-                  >
-                    <q-badge
-                      v-if="props.row.tag"
-                      color="yellow"
-                      text-color="black"
-                    >
-                      <a
-                        v-text="'#'+props.row.tag"
-                        class="inherit"
-                        :href="['/', props.row.tag].join('')"
-                      ></a>
+                  <q-td key="time" :props="props" style="white-space: normal; word-break: break-all">
+                    <q-badge v-if="props.row.tag" color="yellow" text-color="black">
+                      <a v-text="'#'+props.row.tag" class="inherit" :href="['/', props.row.tag].join('')"></a>
                     </q-badge>
                     <span v-text="props.row.memo"></span>
                     <br />
 
                     <i>
                       <span v-text="props.row.dateFrom"></span>
-                      <q-tooltip
-                        ><span v-text="props.row.date"></span
-                      ></q-tooltip>
+                      <q-tooltip><span v-text="props.row.date"></span></q-tooltip>
                     </i>
                   </q-td>
                   <q-td
@@ -269,15 +203,11 @@
                     <span v-text="props.row.fsat"></span>
                     <br />
                     <i v-if="props.row.extra.wallet_fiat_currency">
-                      <span
-                        v-text="formatFiat(props.row.extra.wallet_fiat_currency, props.row.extra.wallet_fiat_amount)"
-                      ></span>
+                      <span v-text="formatFiat(props.row.extra.wallet_fiat_currency, props.row.extra.wallet_fiat_amount)"></span>
                       <br />
                     </i>
                     <i v-if="props.row.extra.fiat_currency">
-                      <span
-                        v-text="formatFiat(props.row.extra.fiat_currency, props.row.extra.fiat_amount)"
-                      ></span>
+                      <span v-text="formatFiat(props.row.extra.fiat_currency, props.row.extra.fiat_amount)"></span>
                     </i>
                   </q-td>
                 </q-tr>
@@ -288,65 +218,33 @@
                       <div v-if="props.row.isIn && props.row.pending">
                         <q-icon name="settings_ethernet" color="grey"></q-icon>
                         <span v-text="$t('invoice_waiting')"></span>
-                        <lnbits-payment-details
-                          :payment="props.row"
-                        ></lnbits-payment-details>
-                        <div
-                          v-if="props.row.bolt11"
-                          class="text-center q-mb-lg"
-                        >
+                        <lnbits-payment-details :payment="props.row"></lnbits-payment-details>
+                        <div v-if="props.row.bolt11" class="text-center q-mb-lg">
                           <a :href="'lightning:' + props.row.bolt11">
                             <q-responsive :ratio="1" class="q-mx-xl">
-                              <lnbits-qrcode
-                                :value="'lightning:' + props.row.bolt11.toUpperCase()"
-                              ></lnbits-qrcode>
+                              <lnbits-qrcode :value="'lightning:' + props.row.bolt11.toUpperCase()"></lnbits-qrcode>
                             </q-responsive>
                           </a>
                         </div>
                         <div class="row q-mt-lg">
-                          <q-btn
-                            outline
-                            color="grey"
-                            @click="copyText(props.row.bolt11)"
-                            :label="$t('copy_invoice')"
-                          ></q-btn>
-                          <q-btn
-                            v-close-popup
-                            flat
-                            color="grey"
-                            class="q-ml-auto"
-                            :label="$t('close')"
-                          ></q-btn>
+                          <q-btn outline color="grey" @click="copyText(props.row.bolt11)" :label="$t('copy_invoice')"></q-btn>
+                          <q-btn v-close-popup flat color="grey" class="q-ml-auto" :label="$t('close')"></q-btn>
                         </div>
                       </div>
                       <div v-else-if="props.row.isPaid && props.row.isIn">
-                        <q-icon
-                          size="18px"
-                          :name="'call_received'"
-                          :color="'green'"
-                        ></q-icon>
+                        <q-icon size="18px" :name="'call_received'" :color="'green'"></q-icon>
                         <span v-text="$t('payment_received')"></span>
-                        <lnbits-payment-details
-                          :payment="props.row"
-                        ></lnbits-payment-details>
+                        <lnbits-payment-details :payment="props.row"></lnbits-payment-details>
                       </div>
                       <div v-else-if="props.row.isPaid && props.row.isOut">
-                        <q-icon
-                          size="18px"
-                          :name="'call_made'"
-                          :color="'pink'"
-                        ></q-icon>
+                        <q-icon size="18px" :name="'call_made'" :color="'pink'"></q-icon>
                         <span v-text="$t('payment_sent')"></span>
-                        <lnbits-payment-details
-                          :payment="props.row"
-                        ></lnbits-payment-details>
+                        <lnbits-payment-details :payment="props.row"></lnbits-payment-details>
                       </div>
                       <div v-else-if="props.row.isOut && props.row.pending">
                         <q-icon name="settings_ethernet" color="grey"></q-icon>
                         <span v-text="$t('outgoing_payment_pending')"></span>
-                        <lnbits-payment-details
-                          :payment="props.row"
-                        ></lnbits-payment-details>
+                        <lnbits-payment-details :payment="props.row"></lnbits-payment-details>
                       </div>
                     </div>
                   </q-card>
@@ -359,10 +257,7 @@
       {% if HIDE_API %}
       <div class="col-12 col-md-4 q-gutter-y-md">
         {% else %}
-        <div
-          v-if="!mobileSimple || $q.screen.gt.sm"
-          class="col-12 col-md-5 q-gutter-y-md"
-        >
+        <div v-if="!mobileSimple || $q.screen.gt.sm" class="col-12 col-md-5 q-gutter-y-md">
           <q-card>
             <q-card-section>
               <h6 class="text-subtitle1 q-mt-none q-mb-sm">
@@ -375,17 +270,11 @@
 
               <q-list>
                 {% if wallet.lnurlwithdraw_full %}
-                <q-expansion-item
-                  group="extras"
-                  icon="crop_free"
-                  :label="$t('drain_funds')"
-                >
+                <q-expansion-item group="extras" icon="crop_free" :label="$t('drain_funds')">
                   <q-card>
                     <q-card-section class="text-center">
                       <a href="lightning:{{wallet.lnurlwithdraw_full}}">
-                        <lnbits-qrcode
-                          :value="lightning:{{wallet.lnurlwithdraw_full}}"
-                        ></lnbits-qrcode>
+                        <lnbits-qrcode :value="lightning:{{wallet.lnurlwithdraw_full}}"></lnbits-qrcode>
                       </a>
                       <p v-text="$t('drain_funds_desc')"></p>
                     </q-card-section>
@@ -394,37 +283,20 @@
                 <q-separator></q-separator>
                 {% endif %}
 
-                <q-expansion-item
-                  group="extras"
-                  icon="settings_cell"
-                  :label="$t('export_to_phone')"
-                >
+                <q-expansion-item group="extras" icon="settings_cell" :label="$t('export_to_phone')">
                   <q-card>
                     <q-card-section class="text-center">
                       <p v-text="$t('export_to_phone_desc')"></p>
-                      <qrcode
-                        :value="'{{request.base_url}}' +'wallet?wal={{wallet.id}}'"
-                        :options="{width:240}"
-                      ></qrcode>
+                      <qrcode :value="'{{request.base_url}}' +'wallet?wal={{wallet.id}}'" :options="{width:240}"></qrcode>
                     </q-card-section>
                   </q-card>
                 </q-expansion-item>
                 <q-separator></q-separator>
-                <q-expansion-item
-                  group="extras"
-                  icon="edit"
-                  :label="$t('rename_wallet')"
-                >
+                <q-expansion-item group="extras" icon="edit" :label="$t('rename_wallet')">
                   <q-card>
                     <q-card-section>
                       <div class="" style="max-width: 320px">
-                        <q-input
-                          filled
-                          v-model.trim="update.name"
-                          label="Name"
-                          dense
-                          @update:model-value="(e) => console.log(e)"
-                        />
+                        <q-input filled v-model.trim="update.name" label="Name" dense @update:model-value="(e) => console.log(e)" />
                       </div>
                       <q-btn
                         :disable="!update.name.length"
@@ -438,11 +310,7 @@
                   </q-card>
                 </q-expansion-item>
                 <q-separator></q-separator>
-                <q-expansion-item
-                  group="extras"
-                  icon="attach_money"
-                  :label="$t('fiat_tracking')"
-                >
+                <q-expansion-item group="extras" icon="attach_money" :label="$t('fiat_tracking')">
                   <q-card>
                     <q-card-section>
                       <div style="max-width: 360px">
@@ -469,20 +337,11 @@
                 </q-expansion-item>
 
                 <q-separator></q-separator>
-                <q-expansion-item
-                  group="extras"
-                  icon="remove_circle"
-                  :label="$t('delete_wallet')"
-                >
+                <q-expansion-item group="extras" icon="remove_circle" :label="$t('delete_wallet')">
                   <q-card>
                     <q-card-section>
                       <p v-text="$t('delete_wallet_desc')"></p>
-                      <q-btn
-                        unelevated
-                        color="red-10"
-                        @click="deleteWallet()"
-                        :label="$t('delete_wallet')"
-                      ></q-btn>
+                      <q-btn unelevated color="red-10" @click="deleteWallet()" :label="$t('delete_wallet')"></q-btn>
                     </q-card-section>
                   </q-card>
                 </q-expansion-item>
@@ -492,44 +351,24 @@
               </q-list>
             </q-card-section>
           </q-card>
-          {% endif %} {% if AD_SPACE %} {% for ADS in AD_SPACE %} {% set AD =
-          ADS.split(";") %}
+          {% endif %} {% if AD_SPACE %} {% for ADS in AD_SPACE %} {% set AD = ADS.split(";") %}
           <q-card>
             <q-card-section>
-              <h6 class="text-subtitle1 q-mt-none q-mb-sm">
-                {{ AD_SPACE_TITLE }}
-              </h6>
+              <h6 class="text-subtitle1 q-mt-none q-mb-sm">{{ AD_SPACE_TITLE }}</h6>
             </q-card-section>
             <q-card-section class="q-pa-none">
-              <a
-                style="display: inline-block"
-                href="{{ AD[0] }}"
-                class="q-ma-md"
-              >
-                <img
-                  style="max-width: 100%; height: auto"
-                  v-if="($q.dark.isActive)"
-                  src="{{ AD[1] }}"
-                />
-                <img
-                  style="max-width: 100%; height: auto"
-                  v-else
-                  src="{{ AD[2] }}"
-                />
+              <a style="display: inline-block" href="{{ AD[0] }}" class="q-ma-md">
+                <img style="max-width: 100%; height: auto" v-if="($q.dark.isActive)" src="{{ AD[1] }}" />
+                <img style="max-width: 100%; height: auto" v-else src="{{ AD[2] }}" />
               </a> </q-card-section></q-card
           >{% endfor %} {% endif %}
         </div>
       </div>
 
       <q-dialog v-model="receive.show" position="top">
-        <q-card
-          v-if="!receive.paymentReq"
-          class="q-pa-lg q-pt-xl lnbits__dialog-card"
-        >
+        <q-card v-if="!receive.paymentReq" class="q-pa-lg q-pt-xl lnbits__dialog-card">
           <q-form @submit="createInvoice" class="q-gutter-md">
-            <p v-if="receive.lnurl" class="text-h6 text-center q-my-none">
-              <b v-text="receive.lnurl.domain"></b> is requesting an invoice:
-            </p>
+            <p v-if="receive.lnurl" class="text-h6 text-center q-my-none"><b v-text="receive.lnurl.domain"></b> is requesting an invoice:</p>
             {% if LNBITS_DENOMINATION != 'sats' %}
             <q-input
               filled
@@ -544,14 +383,7 @@
               :readonly="receive.lnurl && receive.lnurl.fixed"
             ></q-input>
             {% else %}
-            <q-select
-              filled
-              dense
-              v-model="receive.unit"
-              type="text"
-              :label="$t('unit')"
-              :options="receive.units"
-            ></q-select>
+            <q-select filled dense v-model="receive.unit" type="text" :label="$t('unit')" :options="receive.units"></q-select>
             <!-- <q-input
               ref="setAmount"
               filled
@@ -583,64 +415,28 @@
             ></q-input>
             {% endif %}
 
-            <q-input
-              filled
-              dense
-              v-model.trim="receive.data.memo"
-              :label="$t('memo')"
-            ></q-input>
+            <q-input filled dense v-model.trim="receive.data.memo" :label="$t('memo')"></q-input>
             <div v-if="receive.status == 'pending'" class="row q-mt-lg">
-              <q-btn
-                unelevated
-                color="primary"
-                :disable="receive.data.amount == null || receive.data.amount <= 0"
-                type="submit"
-              >
-                <span
-                  v-if="receive.lnurl"
-                  v-text="$t('withdraw_from') + receive.lnurl.domain"
-                ></span>
+              <q-btn unelevated color="primary" :disable="receive.data.amount == null || receive.data.amount <= 0" type="submit">
+                <span v-if="receive.lnurl" v-text="$t('withdraw_from') + receive.lnurl.domain"></span>
                 <span v-else v-text="$t('create_invoice')"></span>
               </q-btn>
-              <q-btn
-                v-close-popup
-                flat
-                color="grey"
-                class="q-ml-auto"
-                :label="$t('cancel')"
-              ></q-btn>
+              <q-btn v-close-popup flat color="grey" class="q-ml-auto" :label="$t('cancel')"></q-btn>
             </div>
-            <q-spinner
-              v-if="receive.status == 'loading'"
-              color="primary"
-              size="2.55em"
-            ></q-spinner>
+            <q-spinner v-if="receive.status == 'loading'" color="primary" size="2.55em"></q-spinner>
           </q-form>
         </q-card>
         <q-card v-else class="q-pa-lg q-pt-xl lnbits__dialog-card">
           <div class="text-center q-mb-lg">
             <a :href="'lightning:' + receive.paymentReq">
               <q-responsive :ratio="1" class="q-mx-xl">
-                <lnbits-qrcode
-                  :value="'lightning:' + receive.paymentReq.toUpperCase()"
-                ></lnbits-qrcode>
+                <lnbits-qrcode :value="'lightning:' + receive.paymentReq.toUpperCase()"></lnbits-qrcode>
               </q-responsive>
             </a>
           </div>
           <div class="row q-mt-lg">
-            <q-btn
-              outline
-              color="grey"
-              @click="copyText(receive.paymentReq)"
-              :label="$t('copy_invoice')"
-            ></q-btn>
-            <q-btn
-              v-close-popup
-              flat
-              color="grey"
-              class="q-ml-auto"
-              :label="$t('close')"
-            ></q-btn>
+            <q-btn outline color="grey" @click="copyText(receive.paymentReq)" :label="$t('copy_invoice')"></q-btn>
+            <q-btn v-close-popup flat color="grey" class="q-ml-auto" :label="$t('close')"></q-btn>
           </div>
         </q-card>
       </q-dialog>
@@ -651,102 +447,55 @@
           <div v-if="parse.invoice">
             <!-- 총액 -->
             <h3 class="q-my-none" v-text="parse.invoice.totalSat + 'sats'"></h3>
-
-            <span
-              class="text-h5 text-italic"
-              v-text="paymentBalance"
-              style="opacity: 0.75"
-            ></span>
-
+            <div v-if="bitcoinPriceKrw">
+              <span v-if="bitcoinPriceKrw > 0" class="text-h5 text-italic" v-text="paymentBalance" style="opacity: 0.75"> </span>
+              <span v-if="bitcoinPriceKrw > 0" v-text=" '(업비트 BTC : ' + (bitcoinPriceKrw).toLocaleString('kr') +'원 기준)' "></span>
+            </div>
             <q-separator class="q-my-sm"></q-separator>
             <p class="text-wrap">
-              <strong>지불후잔액 : </strong>
+              <strong><span v-text="$t('balance_after_amount')"></span> : </strong>
               <span v-text="parse.invoice.balanceAfterPayment + 'sats'"></span>
               <br />
-              <strong>지불금액 : </strong>
-              <span
-                v-text="parse.invoice.fsat + '{{LNBITS_DENOMINATION}}'"
-              ></span>
+              <strong><span v-text="$t('payment_amount')"></span> : </strong>
+              <span v-text="parse.invoice.fsat + '{{LNBITS_DENOMINATION}}'"></span>
               <br />
-              <strong>수수료(1%) : </strong>
-              <span
-                v-text="parseFloat(String(parse.invoice.fee).replaceAll(',', '')) + 'sats'"
-              ></span>
+              <strong> <span v-text="$t('fee')"></span>({{ LNBITS_SERVICE_FEE }})% </strong>
+              <span v-text="parseFloat(String(parse.invoice.fee).replaceAll(',', '')) + 'sats'"></span>
               <q-separator class="q-my-sm"></q-separator>
-              <strong>메모 : </strong>
+              <strong><span v-text="$t('memo')"></span> : </strong>
               <span v-text="parse.invoice.description"></span>
               <br />
-              <strong>만료일자: </strong>
+              <strong><span v-text="$t('expire_date')"></span>: </strong>
               <span v-text="parse.invoice.expireDate"></span>
               <br />
-              <strong>결제 해쉬값: </strong>
+              <strong><span v-text="$t('payment_hash')"></span>: </strong>
               <span v-text="parse.invoice.hash"></span>
             </p>
             <div v-if="canPay" class="row q-mt-lg">
-              <q-btn
-                unelevated
-                color="primary"
-                @click="payInvoice"
-                :label="$t('pay')"
-              ></q-btn>
-              <q-btn
-                v-close-popup
-                flat
-                color="grey"
-                class="q-ml-auto"
-                :label="$t('cancel')"
-              ></q-btn>
+              <q-btn unelevated color="primary" @click="payInvoice" :label="$t('pay')"></q-btn>
+              <q-btn v-close-popup flat color="grey" class="q-ml-auto" :label="$t('cancel')"></q-btn>
             </div>
             <div v-else class="row q-mt-lg">
-              <q-btn
-                :label="$t('not_enough_funds')"
-                unelevated
-                disabled
-                color="yellow"
-                text-color="black"
-              ></q-btn>
-              <q-btn
-                v-close-popup
-                flat
-                color="grey"
-                class="q-ml-auto"
-                :label="$t('cancel')"
-              ></q-btn>
+              <q-btn :label="$t('not_enough_funds')" unelevated disabled color="yellow" text-color="black"></q-btn>
+              <q-btn v-close-popup flat color="grey" class="q-ml-auto" :label="$t('cancel')"></q-btn>
             </div>
           </div>
           <div v-else-if="parse.lnurlauth">
             <q-form @submit="authLnurl" class="q-gutter-md">
-              <p class="q-my-none text-h6">
-                Authenticate with <b v-text="parse.lnurlauth.domain"></b>?
-              </p>
+              <p class="q-my-none text-h6">Authenticate with <b v-text="parse.lnurlauth.domain"></b>?</p>
               <q-separator class="q-my-sm"></q-separator>
               <p>
-                For every website and for every LNbits wallet, a new keypair
-                will be deterministically generated so your identity can't be
-                tied to your LNbits wallet or linked across websites. No other
-                data will be shared with
+                For every website and for every LNbits wallet, a new keypair will be deterministically generated so your identity can't be tied to
+                your LNbits wallet or linked across websites. No other data will be shared with
                 <span v-text="parse.lnurlauth.domain"></span>.
               </p>
-              <p>
-                Your public key for <b v-text="parse.lnurlauth.domain"></b> is:
-              </p>
+              <p>Your public key for <b v-text="parse.lnurlauth.domain"></b> is:</p>
               <p class="q-mx-xl">
                 <code class="text-wrap" v-text="parse.lnurlauth.pubkey"></code>
               </p>
               <div class="row q-mt-lg">
-                <q-btn
-                  unelevated
-                  color="primary"
-                  type="submit"
-                  :label="$t('login')"
-                ></q-btn>
-                <q-btn
-                  :label="$t('cancel')"
-                  v-close-popup
-                  flat
-                  color="grey"
-                  class="q-ml-auto"
-                ></q-btn>
+                <q-btn unelevated color="primary" type="submit" :label="$t('login')"></q-btn>
+                <q-btn :label="$t('cancel')" v-close-popup flat color="grey" class="q-ml-auto"></q-btn>
               </div>
             </q-form>
           </div>
@@ -754,21 +503,16 @@
             <q-form @submit="payLnurl" class="q-gutter-md">
               <p v-if="parse.lnurlpay.fixed" class="q-my-none text-h6">
                 <b v-text="parse.lnurlpay.domain"></b> is requesting
-                <span
-                  v-text="msatoshiFormat(parse.lnurlpay.maxSendable)"
-                ></span>
+                <span v-text="msatoshiFormat(parse.lnurlpay.maxSendable)"></span>
                 <span v-text="'{{LNBITS_DENOMINATION}}'"></span>
                 <span v-if="parse.lnurlpay.commentAllowed > 0">
                   <br />
                   and a
-                  <span v-text="parse.lnurlpay.commentAllowed"></span>-char
-                  comment
+                  <span v-text="parse.lnurlpay.commentAllowed"></span>-char comment
                 </span>
               </p>
               <p v-else class="q-my-none text-h6 text-center">
-                <b
-                  v-text="parse.lnurlpay.targetUser || parse.lnurlpay.domain"
-                ></b>
+                <b v-text="parse.lnurlpay.targetUser || parse.lnurlpay.domain"></b>
                 is requesting <br />
                 between
                 <b v-text="msatoshiFormat(parse.lnurlpay.minSendable)"></b> and
@@ -777,16 +521,12 @@
                 <span v-if="parse.lnurlpay.commentAllowed > 0">
                   <br />
                   and a
-                  <span v-text="parse.lnurlpay.commentAllowed"></span>-char
-                  comment
+                  <span v-text="parse.lnurlpay.commentAllowed"></span>-char comment
                 </span>
               </p>
               <q-separator class="q-my-sm"></q-separator>
               <div class="row">
-                <p
-                  class="col text-justify text-italic"
-                  v-text="parse.lnurlpay.description"
-                ></p>
+                <p class="col text-justify text-italic" v-text="parse.lnurlpay.description"></p>
                 <p class="col-4 q-pl-md" v-if="parse.lnurlpay.image">
                   <q-img :src="parse.lnurlpay.image" />
                 </p>
@@ -818,10 +558,7 @@
                     :readonly="parse.lnurlpay && parse.lnurlpay.fixed"
                   ></q-input>
                 </div>
-                <div
-                  class="col-8 q-pl-md"
-                  v-if="parse.lnurlpay.commentAllowed > 0"
-                >
+                <div class="col-8 q-pl-md" v-if="parse.lnurlpay.commentAllowed > 0">
                   <q-input
                     filled
                     dense
@@ -834,76 +571,29 @@
               </div>
               <div class="row q-mt-lg">
                 <q-btn unelevated color="primary" type="submit">Send</q-btn>
-                <q-btn
-                  :label="$t('cancel')"
-                  v-close-popup
-                  flat
-                  color="grey"
-                  class="q-ml-auto"
-                ></q-btn>
+                <q-btn :label="$t('cancel')" v-close-popup flat color="grey" class="q-ml-auto"></q-btn>
               </div>
             </q-form>
           </div>
           <div v-else>
-            <q-form
-              v-if="!parse.camera.show"
-              @submit="decodeRequest"
-              class="q-gutter-md"
-            >
-              <q-input
-                filled
-                dense
-                v-model.trim="parse.data.request"
-                type="textarea"
-                :label="$t('paste_invoice_label')"
-                ref="textArea"
-              >
-              </q-input>
+            <q-form v-if="!parse.camera.show" @submit="decodeRequest" class="q-gutter-md">
+              <q-input filled dense v-model.trim="parse.data.request" type="textarea" :label="$t('paste_invoice_label')" ref="textArea"> </q-input>
               <div class="row q-mt-lg">
-                <q-btn
-                  unelevated
-                  color="primary"
-                  :disable="parse.data.request == ''"
-                  type="submit"
-                  :label="$t('read')"
-                ></q-btn>
-                <q-icon
-                  name="content_paste"
-                  color="grey"
-                  class="q-mt-xs q-ml-sm q-mr-auto"
-                  v-if="parse.copy.show"
-                  @click="pasteToTextArea"
-                >
+                <q-btn unelevated color="primary" :disable="parse.data.request == ''" type="submit" :label="$t('read')"></q-btn>
+                <q-icon name="content_paste" color="grey" class="q-mt-xs q-ml-sm q-mr-auto" v-if="parse.copy.show" @click="pasteToTextArea">
                   <q-tooltip>
                     <span v-text="$t('paste_from_clipboard')"></span>
                   </q-tooltip>
                 </q-icon>
-                <q-btn
-                  v-close-popup
-                  flat
-                  color="grey"
-                  class="q-ml-auto"
-                  :label="$t('cancel')"
-                ></q-btn>
+                <q-btn v-close-popup flat color="grey" class="q-ml-auto" :label="$t('cancel')"></q-btn>
               </div>
             </q-form>
             <div v-else>
               <q-responsive :ratio="1">
-                <qrcode-stream
-                  @decode="decodeQR"
-                  @init="onInitQR"
-                  class="rounded-borders"
-                ></qrcode-stream>
+                <qrcode-stream @decode="decodeQR" @init="onInitQR" class="rounded-borders"></qrcode-stream>
               </q-responsive>
               <div class="row q-mt-lg">
-                <q-btn
-                  :label="$t('cancel')"
-                  @click="closeCamera"
-                  flat
-                  color="grey"
-                  class="q-ml-auto"
-                >
-                </q-btn>
+                <q-btn :label="$t('cancel')" @click="closeCamera" flat color="grey" class="q-ml-auto"> </q-btn>
               </div>
             </div>
           </div>
@@ -913,20 +603,10 @@
       <q-dialog v-model="parse.camera.show" position="top">
         <q-card class="q-pa-lg q-pt-xl">
           <div class="text-center q-mb-lg">
-            <qrcode-stream
-              @decode="decodeQR"
-              @init="onInitQR"
-              class="rounded-borders"
-            ></qrcode-stream>
+            <qrcode-stream @decode="decodeQR" @init="onInitQR" class="rounded-borders"></qrcode-stream>
           </div>
           <div class="row q-mt-lg">
-            <q-btn
-              @click="closeCamera"
-              flat
-              color="grey"
-              class="q-ml-auto"
-              :label="$t('cancel')"
-            ></q-btn>
+            <q-btn @click="closeCamera" flat color="grey" class="q-ml-auto" :label="$t('cancel')"></q-btn>
           </div>
         </q-card>
       </q-dialog>
@@ -936,14 +616,7 @@
           <q-card-section>
             <div class="row q-gutter-sm justify-between">
               <div class="text-h6">Payments Chart</div>
-              <q-select
-                label="Group"
-                filled
-                dense
-                v-model="paymentsChart.group"
-                style="min-width: 120px"
-                :options="paymentsChart.groupOptions"
-              >
+              <q-select label="Group" filled dense v-model="paymentsChart.group" style="min-width: 120px" :options="paymentsChart.groupOptions">
               </q-select>
             </div>
 
@@ -958,15 +631,9 @@
         indicator-color="transparent"
         align="justify"
       >
-        <q-tab
-          icon="file_download"
-          @click="showReceiveDialog"
-          :label="$t('receive')"
-        >
-        </q-tab>
+        <q-tab icon="file_download" @click="showReceiveDialog" :label="$t('receive')"> </q-tab>
 
-        <q-tab @click="showParseDialog" icon="file_upload" :label="$t('send')">
-        </q-tab>
+        <q-tab @click="showParseDialog" icon="file_upload" :label="$t('send')"> </q-tab>
         <q-btn
           round
           size="35px"
@@ -983,20 +650,8 @@
           <h6 class="q-my-md text-primary">Warning</h6>
           <p v-text="$t('disclaimer_dialog')"></p>
           <div class="row q-mt-lg">
-            <q-btn
-              outline
-              color="grey"
-              type="a"
-              href="/account"
-              :label="$t('my_account')"
-            ></q-btn>
-            <q-btn
-              v-close-popup
-              flat
-              color="grey"
-              class="q-ml-auto"
-              :label="$t('i_understand')"
-            ></q-btn>
+            <q-btn outline color="grey" type="a" href="/account" :label="$t('my_account')"></q-btn>
+            <q-btn v-close-popup flat color="grey" class="q-ml-auto" :label="$t('i_understand')"></q-btn>
           </div>
         </q-card>
       </q-dialog>
