@@ -44,12 +44,7 @@ new Vue({
     },
     register: async function () {
       try {
-        await LNbits.api.register(
-          this.username,
-          this.email,
-          this.password,
-          this.passwordRepeat
-        )
+        await LNbits.api.register(this.username, this.email, this.password, this.passwordRepeat)
         window.location.href = '/wallet'
       } catch (e) {
         LNbits.utils.notifyApiError(e)
@@ -85,9 +80,7 @@ new Vue({
       })
     },
     validateUsername: function (val) {
-      const usernameRegex = new RegExp(
-        '^(?=[a-zA-Z0-9._]{2,20}$)(?!.*[_.]{2})[^_.].*[^_.]$'
-      )
+      const usernameRegex = new RegExp('^(?=[a-zA-Z0-9._]{2,20}$)(?!.*[_.]{2})[^_.].*[^_.]$')
       return usernameRegex.test(val)
     }
   },

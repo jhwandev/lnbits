@@ -30,21 +30,18 @@ window.localisation.kr = {
   restart_tooltip: '변경 사항을 적용하려면 서버를 재시작해야 합니다.',
   add_funds_tooltip: '지갑에 자금을 추가합니다.',
   reset_defaults: '기본 설정으로 돌아가기',
-  reset_defaults_tooltip:
-    '설정했던 내용들을 모두 지우고, 기본 설정으로 돌아갑니다.',
+  reset_defaults_tooltip: '설정했던 내용들을 모두 지우고, 기본 설정으로 돌아갑니다.',
   download_backup: '데이터베이스 백업 다운로드',
   name_your_wallet: '사용할 %{name}지갑의 이름을 정하세요',
   paste_invoice_label: '인보이스, 결제 요청, 혹은 lnurl 코드를 붙여넣으세요 *',
   lnbits_description:
     '설정이 쉽고 가벼운 LNBits는 어떤 라이트닝 네트워크의 예산 자원 위에서든 돌아갈 수 있습니다. 현재 지원하는 예산 자원의 형태는 LND, Core Lightning, OpenNode, Alby, LNPay, 그리고 다른 LNBits 지갑들입니다. 스스로 사용하기 위해, 또는 다른 사람들에게 수탁형 솔루션을 제공하기 위해 LNBits를 운영할 수 있습니다. 각 지갑들은 자신만의 API key를 가지며, 생성 가능한 지갑의 수에는 제한이 없습니다. 자금을 분할할 수 있는 기능으로 인해, LNBits는 자금 운영 도구로써뿐만 아니라 개발 도구로써도 유용합니다. 확장 기능들은 LNBits에 여러분들이 라이트닝 네트워크의 다양한 최신 기술들을 수행해볼 수 있게 하는 추가 기능을 제공합니다. LNBits 개발진들은 확장 기능들의 개발 또한 가능한 쉽게 만들었으며, 무료 오픈 소스 프로젝트답게 사람들이 자신만의 확장 기능들을 개발하고 제출하기를 응원합니다.',
   export_to_phone: 'QR 코드를 이용해 모바일 기기로 내보내기',
-  export_to_phone_desc:
-    '이 QR 코드는 선택된 지갑의 최대 접근 권한을 가진 전체 URL을 담고 있습니다. 스캔 후, 모바일 기기에서 지갑을 열 수 있습니다.',
+  export_to_phone_desc: '이 QR 코드는 선택된 지갑의 최대 접근 권한을 가진 전체 URL을 담고 있습니다. 스캔 후, 모바일 기기에서 지갑을 열 수 있습니다.',
   wallets: '지갑',
   add_wallet: '새로운 지갑을 추가합니다',
   delete_wallet: '지갑을 삭제합니다',
-  delete_wallet_desc:
-    '이 지갑은 삭제될 것이며, 삭제 시 지갑 내 자금은 복구가 불가능합니다.',
+  delete_wallet_desc: '이 지갑은 삭제될 것이며, 삭제 시 지갑 내 자금은 복구가 불가능합니다.',
   rename_wallet: '지갑 이름 변경',
   update_name: '이름 변경하기',
   fiat_tracking: '법정통화 가격 표시',
@@ -57,8 +54,7 @@ window.localisation.kr = {
   use_with_caution: '주의하세요 - %{name} 지갑은 아직 BETA 단계입니다.',
   service_fee: '서비스 수수료: 거래액의 %{amount} %',
   service_fee_max: '서비스 수수료: 거래액의 %{amount} % (최대 %{max} sats)',
-  service_fee_tooltip:
-    '지불 결제 시마다 LNBits 서버 관리자에게 납부되는 서비스 수수료',
+  service_fee_tooltip: '지불 결제 시마다 LNBits 서버 관리자에게 납부되는 서비스 수수료',
   toggle_darkmode: '다크 모드 전환',
   view_swagger_docs: 'LNbits Swagger API 문서를 봅니다',
   api_docs: 'API 문서',
@@ -119,8 +115,7 @@ window.localisation.kr = {
   activated: '작동됨',
   deactivated: '작동 중지',
   release_notes: '배포 노트',
-  activate_extension_details:
-    '사용자들의 확장 기능 사용 가능 여부를 결정합니다',
+  activate_extension_details: '사용자들의 확장 기능 사용 가능 여부를 결정합니다',
   featured: '추천',
   all: '전체',
   only_admins_can_install: '(관리자 계정만이 확장 기능을 설치할 수 있습니다)',
@@ -129,15 +124,11 @@ window.localisation.kr = {
   extension_depends_on: '의존성 존재:',
   extension_rating_soon: '평점 기능도 곧 구현됩니다',
   extension_installed_version: '설치된 버전',
-  extension_uninstall_warning:
-    '모든 사용자들로부터 이 확장 기능을 제거한다는 점에 유의하세요.',
+  extension_uninstall_warning: '모든 사용자들로부터 이 확장 기능을 제거한다는 점에 유의하세요.',
   uninstall_confirm: '네, 삭제합니다',
-  extension_db_drop_info:
-    '해당 확장 기능의 모든 데이터가 영구적으로 삭제됩니다. 작업 수행 후에는 되돌릴 수 없습니다!',
-  extension_db_drop_warning:
-    '해당 확장 기능의 모든 데이터가 영구적으로 삭제될 겁니다. 계속하려면 확장 기능의 이름을 입력해주세요:',
-  extension_min_lnbits_version:
-    '이 배포 버전은 더 높은 버전의 lnbits가 설치되어 있어야 합니다.',
+  extension_db_drop_info: '해당 확장 기능의 모든 데이터가 영구적으로 삭제됩니다. 작업 수행 후에는 되돌릴 수 없습니다!',
+  extension_db_drop_warning: '해당 확장 기능의 모든 데이터가 영구적으로 삭제될 겁니다. 계속하려면 확장 기능의 이름을 입력해주세요:',
+  extension_min_lnbits_version: '이 배포 버전은 더 높은 버전의 lnbits가 설치되어 있어야 합니다.',
   payment_hash: '결제 해쉬값',
   fee: '수수료',
   amount: '액수',
@@ -153,14 +144,12 @@ window.localisation.kr = {
   no_notifications: '알림 없음',
   notifications_disabled: 'LNbits 상태 알림이 비활성화되었습니다.',
   enable_notifications: '알림 활성화',
-  enable_notifications_desc:
-    '활성화 시, 가장 최신의 보안 사고나 소프트웨어 업데이트 등의 LNbits 상황 업데이트를 불러옵니다.',
+  enable_notifications_desc: '활성화 시, 가장 최신의 보안 사고나 소프트웨어 업데이트 등의 LNbits 상황 업데이트를 불러옵니다.',
   enable_killswitch: '비상 정지 활성화',
   enable_killswitch_desc:
     '활성화 시, LNbits 메인 서버에서 비상 정지 신호를 보내면 자동으로 자금의 원천을 VoidWallet으로 변경합니다. 업데이트 이후 수동으로 활성화해 주어야 합니다.',
   killswitch_interval: '비상 정지 시간 간격',
-  killswitch_interval_desc:
-    'LNbits 메인 서버에서 나오는 비상 정지 신호를 백그라운드 작업으로 얼마나 자주 확인할 것인지를 결정합니다. (분 단위)',
+  killswitch_interval_desc: 'LNbits 메인 서버에서 나오는 비상 정지 신호를 백그라운드 작업으로 얼마나 자주 확인할 것인지를 결정합니다. (분 단위)',
   enable_watchdog: '와치독 활성화',
   enable_watchdog_desc:
     '활성화 시, LNbits 잔금보다 당신의 잔금이 지정한 수준보다 더 낮아질 경우 자동으로 자금의 원천을 VoidWallet으로 변경합니다. 업데이트 이후 수동으로 활성화해 주어야 합니다.',
@@ -168,12 +157,10 @@ window.localisation.kr = {
   watchdog_interval_desc:
     '와치독 델타 값을 기반으로 하여 당신의 LNbits 서버에서 나오는 비상 정지 신호를 백그라운드 작업으로 얼마나 자주 확인할 것인지를 결정합니다. (분 단위)',
   watchdog_delta: '와치독 델타',
-  watchdog_delta_desc:
-    '당신의 자금 원천을 VoidWallet으로 변경하기까지의 기준 값 [LNbits 잔액 - 노드 잔액 > 델타 값]',
+  watchdog_delta_desc: '당신의 자금 원천을 VoidWallet으로 변경하기까지의 기준 값 [LNbits 잔액 - 노드 잔액 > 델타 값]',
   status: '상황',
   notification_source: '알림 메세지 출처',
-  notification_source_label:
-    '알림 메세지를 가져올 URL (공식 LNbits 상황판 출처나, 당신이 신뢰할 수 있는 출처만을 사용하세요)',
+  notification_source_label: '알림 메세지를 가져올 URL (공식 LNbits 상황판 출처나, 당신이 신뢰할 수 있는 출처만을 사용하세요)',
   more: '더 알아보기',
   less: '적게',
   releases: '배포 버전들',
@@ -230,7 +217,18 @@ window.localisation.kr = {
   logout: '로그아웃',
   register_for_kyc: 'KYC 등록',
   pending_for_kyc: 'KYC 대기중',
+  kyc_verified: 'KYC 완료',
+  kyc_request_dialog: 'KYC 인증을 요청하시겠습니까?',
+  kyc_request_completed: 'KYC 인증 요청이 완료되었습니다.',
+  kyc_required: 'KYC 인증 필요',
+  kyc_required_desc: '서비스 이용을 위해서는 KYC 인증이 필요합니다. "내 계정" 에서 인증을 진행해주세요.',
+  go_to_account: '내 계정으로 이동',
   expire_date: '만료일',
   balance_after_amount: '지불후 잔액',
-  payment_amount: '지불금액'
+  payment_amount: '지불금액',
+
+  look_and_feel: '테마 설정',
+  color_scheme: '색상 스키마',
+  notifications: '알림',
+  language: '언어 설정'
 }

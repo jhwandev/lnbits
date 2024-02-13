@@ -37,13 +37,11 @@ window.localisation.en = {
   lnbits_description:
     'Easy to set up and lightweight, LNbits can run on any lightning-network funding source, currently supporting LND, Core Lightning, OpenNode, Alby, LNPay and even LNbits itself! You can run LNbits for yourself, or easily offer a custodian solution for others. Each wallet has its own API keys and there is no limit to the number of wallets you can make. Being able to partition funds makes LNbits a useful tool for money management and as a development tool. Extensions add extra functionality to LNbits so you can experiment with a range of cutting-edge technologies on the lightning network. We have made developing extensions as easy as possible, and as a free and open-source project, we encourage people to develop and submit their own.',
   export_to_phone: 'Export to Phone with QR Code',
-  export_to_phone_desc:
-    'This QR code contains your wallet URL with full access. You can scan it from your phone to open your wallet from there.',
+  export_to_phone_desc: 'This QR code contains your wallet URL with full access. You can scan it from your phone to open your wallet from there.',
   wallets: 'Wallets',
   add_wallet: 'Add a new wallet',
   delete_wallet: 'Delete wallet',
-  delete_wallet_desc:
-    'This whole wallet will be deleted, the funds will be UNRECOVERABLE.',
+  delete_wallet_desc: 'This whole wallet will be deleted, the funds will be UNRECOVERABLE.',
   rename_wallet: 'Rename wallet',
   update_name: 'Update name',
   fiat_tracking: 'Fiat tracking',
@@ -56,8 +54,7 @@ window.localisation.en = {
   use_with_caution: 'USE WITH CAUTION - %{name} wallet is still in BETA',
   service_fee: 'Service fee: %{amount} % per transaction',
   service_fee_max: 'Service fee: %{amount} % per transaction (max %{max} sats)',
-  service_fee_tooltip:
-    'Service fee charged by the LNbits server admin per outgoing transaction',
+  service_fee_tooltip: 'Service fee charged by the LNbits server admin per outgoing transaction',
   toggle_darkmode: 'Toggle Dark Mode',
   view_swagger_docs: 'View LNbits Swagger API docs',
   api_docs: 'API docs',
@@ -127,13 +124,10 @@ window.localisation.en = {
   extension_depends_on: 'Depends on:',
   extension_rating_soon: 'Ratings coming soon',
   extension_installed_version: 'Installed version',
-  extension_uninstall_warning:
-    'You are about to remove the extension for all users.',
+  extension_uninstall_warning: 'You are about to remove the extension for all users.',
   uninstall_confirm: 'Yes, Uninstall',
-  extension_db_drop_info:
-    'All data for the extension will be permanently deleted. There is no way to undo this operation!',
-  extension_db_drop_warning:
-    'You are about to remove all data for the extension. Please type the extension name to continue:',
+  extension_db_drop_info: 'All data for the extension will be permanently deleted. There is no way to undo this operation!',
+  extension_db_drop_warning: 'You are about to remove all data for the extension. Please type the extension name to continue:',
   extension_min_lnbits_version: 'This release requires at least LNbits version',
   payment_hash: 'Payment Hash',
   fee: 'Fee',
@@ -150,14 +144,12 @@ window.localisation.en = {
   no_notifications: 'No notifications',
   notifications_disabled: 'LNbits status notifications are disabled.',
   enable_notifications: 'Enable Notifications',
-  enable_notifications_desc:
-    'If enabled it will fetch the latest LNbits Status updates, like security incidents and updates.',
+  enable_notifications_desc: 'If enabled it will fetch the latest LNbits Status updates, like security incidents and updates.',
   enable_killswitch: 'Enable Killswitch',
   enable_killswitch_desc:
     'If enabled it will change your funding source to VoidWallet automatically if LNbits sends out a killswitch signal. You will need to enable manually after an update.',
   killswitch_interval: 'Killswitch Interval',
-  killswitch_interval_desc:
-    'How often the background task should check for the LNBits killswitch signal from the status source (in minutes).',
+  killswitch_interval_desc: 'How often the background task should check for the LNBits killswitch signal from the status source (in minutes).',
   enable_watchdog: 'Enable Watchdog',
   enable_watchdog_desc:
     'If enabled it will change your funding source to VoidWallet automatically if your balance is lower than the LNbits balance. You will need to enable manually after an update.',
@@ -165,12 +157,10 @@ window.localisation.en = {
   watchdog_interval_desc:
     'How often the background task should check for a killswitch signal in the watchdog delta [node_balance - lnbits_balance] (in minutes).',
   watchdog_delta: 'Watchdog Delta',
-  watchdog_delta_desc:
-    'Limit before killswitch changes funding source to VoidWallet [lnbits_balance - node_balance > delta]',
+  watchdog_delta_desc: 'Limit before killswitch changes funding source to VoidWallet [lnbits_balance - node_balance > delta]',
   status: 'Status',
   notification_source: 'Notification Source',
-  notification_source_label:
-    'Source URL (only use the official LNbits status source, and sources you can trust)',
+  notification_source_label: 'Source URL (only use the official LNbits status source, and sources you can trust)',
   more: 'more',
   less: 'less',
   releases: 'Releases',
@@ -230,6 +220,12 @@ window.localisation.en = {
   color_scheme: 'Color Scheme',
   register_for_kyc: 'Register for KYC',
   pending_for_kyc: 'KYC Pending',
+  kyc_request_dialog: 'Would you like to request KYC verification?',
+  kyc_request_completed: 'KYC verification request completed.',
+  kyc_verified: 'KYC Verified',
+  kyc_required: 'KYC Verification Required',
+  kyc_required_desc: 'You need to be KYC verified to use this service. Please verify in “My Account”.',
+  go_to_account: 'Go to My Account',
   expired_date: 'Expire date',
   balance_after_amount: 'Balance after payment',
   payment_amount: 'Payment amount'

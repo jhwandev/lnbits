@@ -6,6 +6,7 @@ new Vue({
       user: null,
       hasUsername: false,
       showUserId: false,
+      kycStatus: null,
       tab: 'user',
       passwordData: {
         show: false,
@@ -16,6 +17,26 @@ new Vue({
     }
   },
   methods: {
+    registerForKyc: async function () {
+      const a = this.$t('kyc_request_completed')
+      LNbits.utils.confirmDialog('KYC 인증을 요청하시겠습니까?').onOk(async () => {
+        try {
+          const {data} = await LNbits.api.request('PUT', '/api/v1/auth/kyc', null, {
+            user_id: this.user.id
+          })
+
+          this.kycStatus = data.config.kyc_status
+
+          this.$q.notify({
+            type: 'positive',
+            message: a
+          })
+        } catch (e) {
+          LNbits.utils.notifyApiError(e)
+        }
+      })
+    },
+
     activeLanguage: function (lang) {
       return window.i18n.locale === lang
     },
@@ -33,17 +54,12 @@ new Vue({
     },
     updateAccount: async function () {
       try {
-        const {data} = await LNbits.api.request(
-          'PUT',
-          '/api/v1/auth/update',
-          null,
-          {
-            user_id: this.user.id,
-            username: this.user.username,
-            email: this.user.email,
-            config: this.user.config
-          }
-        )
+        const {data} = await LNbits.api.request('PUT', '/api/v1/auth/update', null, {
+          user_id: this.user.id,
+          username: this.user.username,
+          email: this.user.email,
+          config: this.user.config
+        })
         this.user = data
         this.$q.notify({
           type: 'positive',
@@ -55,17 +71,12 @@ new Vue({
     },
     updatePassword: async function () {
       try {
-        const {data} = await LNbits.api.request(
-          'PUT',
-          '/api/v1/auth/password',
-          null,
-          {
-            user_id: this.user.id,
-            password_old: this.passwordData.oldPassword,
-            password: this.passwordData.newPassword,
-            password_repeat: this.passwordData.newPasswordRepeat
-          }
-        )
+        const {data} = await LNbits.api.request('PUT', '/api/v1/auth/password', null, {
+          user_id: this.user.id,
+          password_old: this.passwordData.oldPassword,
+          password: this.passwordData.newPassword,
+          password_repeat: this.passwordData.newPasswordRepeat
+        })
         this.user = data
         this.passwordData.show = false
         this.$q.notify({
@@ -90,6 +101,8 @@ new Vue({
       const {data} = await LNbits.api.getAuthenticatedUser()
       this.user = data
       this.hasUsername = !!data.username
+      this.kycStatus = data.config.kyc_status
+
       if (!this.user.config) this.user.config = {}
     } catch (e) {
       LNbits.utils.notifyApiError(e)
