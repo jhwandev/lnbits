@@ -3,27 +3,19 @@
 <html lang="en">
   <head>
     {% for url in INCLUDED_CSS %}
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{{ static_url_for('static', url ) }}"
-    />
+    <link rel="stylesheet" type="text/css" href="{{ static_url_for('static', url ) }}" />
     {% endfor %} {% block styles %}{% endblock %}
     <style>
       @font-face {
         font-family: 'Material Icons';
         font-style: normal;
         font-weight: 400;
-        src: url("{{ static_url_for('static', 'fonts/material-icons-v50.woff2') }}")
-          format('woff2');
+        src: url("{{ static_url_for('static', 'fonts/material-icons-v50.woff2') }}") format('woff2');
       }
     </style>
     <title>{% block title %}{{ SITE_TITLE }}{% endblock %}</title>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     {% if web_manifest %}
@@ -36,94 +28,45 @@
       <q-header bordered class="bg-marginal-bg">
         <q-toolbar>
           {% block drawer_toggle %}
-          <q-btn
-            dense
-            flat
-            round
-            icon="menu"
-            @click="g.visibleDrawer = !g.visibleDrawer"
-          ></q-btn>
+          <q-btn dense flat round icon="menu" @click="g.visibleDrawer = !g.visibleDrawer"></q-btn>
           {% endblock %}
           <q-toolbar-title>
             {% block toolbar_title %}
             <q-btn flat no-caps dense size="lg" type="a" href="/"
               >{% if USE_CUSTOM_LOGO %}
               <img height="30px" alt="Logo" src="{{ USE_CUSTOM_LOGO }}" />
-              {%else%} {% if SITE_TITLE != 'LNbits' %} {{ SITE_TITLE }} {% else
-              %}
+              {%else%} {% if SITE_TITLE != 'LNbits' %} {{ SITE_TITLE }} {% else %}
               <span><strong>LN</strong>bits</span> {% endif %} {%endif%} </q-btn
-            >{% endblock %} {% block toolbar_subtitle %}{%if user and
-            user.super_user%}
-            <q-badge align="middle">Super User</q-badge>
+            >{% endblock %} {% block toolbar_subtitle %}{%if user and user.super_user%}
+            <q-badge align="middle">Super</q-badge>
             {% elif user and user.admin %}
-            <q-badge align="middle">Admin User</q-badge>
+            <q-badge align="middle">Admin</q-badge>
             {%endif%}{% endblock %}
           </q-toolbar-title>
           {% block beta %} {% if VOIDWALLET %}
-          <q-badge
-            v-text="$t('voidwallet_active')"
-            color="red"
-            text-color="black"
-            class="q-mr-md gt-md"
-          >
-          </q-badge>
+          <q-badge v-text="$t('voidwallet_active')" color="red" text-color="black" class="q-mr-md gt-md"> </q-badge>
           {%endif%}
-          <q-badge
-            v-show="$q.screen.gt.sm"
-            color="yellow"
-            text-color="black"
-            class="q-mr-md"
-          >
-            <span
-              v-text='$t("use_with_caution", { name: "{{ SITE_TITLE }}" })'
-            ></span>
+          <q-badge v-show="$q.screen.gt.sm" color="yellow" text-color="black" class="q-mr-md">
+            <span v-text='$t("use_with_caution", { name: "{{ SITE_TITLE }}" })'></span>
           </q-badge>
           {% if LNBITS_SERVICE_FEE > 0 %}
-          <q-badge
-            v-show="$q.screen.gt.sm"
-            v-if="g.user"
-            color="green"
-            text-color="black"
-            class="q-mr-md"
-          >
+          <q-badge v-show="$q.screen.gt.sm" v-if="g.user" color="green" text-color="black" class="q-mr-md">
             {% if LNBITS_SERVICE_FEE_MAX > 0 %}
-            <span
-              v-text='$t("service_fee_max", { amount: "{{ LNBITS_SERVICE_FEE }}", max: "{{ LNBITS_SERVICE_FEE_MAX }}"})'
-            ></span>
+            <span v-text='$t("service_fee_max", { amount: "{{ LNBITS_SERVICE_FEE }}", max: "{{ LNBITS_SERVICE_FEE_MAX }}"})'></span>
             {%else%}
-            <span
-              v-text='$t("service_fee", { amount: "{{ LNBITS_SERVICE_FEE }}" })'
-            ></span>
+            <span v-text='$t("service_fee", { amount: "{{ LNBITS_SERVICE_FEE }}" })'></span>
             {%endif%}
-            <q-tooltip
-              ><span v-text='$t("service_fee_tooltip")'></span
-            ></q-tooltip>
+            <q-tooltip><span v-text='$t("service_fee_tooltip")'></span></q-tooltip>
           </q-badge>
 
           {%endif%} {% endblock %}
-          <q-badge
-            v-if="g.offline"
-            color="red"
-            text-color="white"
-            class="q-mr-md"
-          >
+          <q-badge v-if="g.offline" color="red" text-color="white" class="q-mr-md">
             <span>OFFLINE</span>
           </q-badge>
-          <q-btn v-if="activeLanguage('en')" @click="changeLanguage('kr')"
-            >KR</q-btn
-          >
-          <q-btn v-if="activeLanguage('kr')" @click="changeLanguage('en')"
-            >EN</q-btn
-          >
+          <!-- <q-btn v-if="activeLanguage('en')" @click="changeLanguage('kr')">KR</q-btn>
+          <q-btn v-if="activeLanguage('kr')" @click="changeLanguage('en')">EN</q-btn> -->
 
-          <q-btn-dropdown
-            v-if="isUserAuthorized"
-            dense
-            flat
-            round
-            size="sm"
-            class="q-pl-sm"
-          >
+          <q-btn-dropdown v-if="isUserAuthorized" dense flat round size="sm" class="q-pl-sm">
             <template v-slot:label>
               <div>
                 {%if user and user.config and user.config.picture%}
@@ -163,62 +106,66 @@
                   <q-item-label> </q-item-label>
                 </q-item-section>
               </q-item>
+              <q-separator></q-separator>
+              <!-- 언어변경 -->
+              <q-item clickable v-close-popup
+                ><q-item-section style="min-width: 50px">
+                  <q-icon name="language" />
+                </q-item-section>
+                <q-item-section style="min-width: 90px">
+                  <q-item-label>
+                    <q-div v-if="activeLanguage('en')" @click="changeLanguage('kr')">KR</q-div>
+                    <q-div v-if="activeLanguage('kr')" @click="changeLanguage('en')">EN</q-div>
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label> </q-item-label>
+                </q-item-section>
+              </q-item>
+              <!-- <q-item clickable v-close-popup @click="logout"
+                ><q-item-section style="min-width: 50px">
+                  <q-icon name="logout" />
+                </q-item-section>
+                <q-item-section style="min-width: 90px">
+                  <q-item-label>
+                    <q-btn v-if="activeLanguage('en')" @click="changeLanguage('kr')">KR</q-btn>
+                    <q-btn v-if="activeLanguage('kr')" @click="changeLanguage('en')">EN</q-btn>
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label> </q-item-label>
+                </q-item-section>
+              </q-item> -->
             </q-list>
           </q-btn-dropdown>
         </q-toolbar>
       </q-header>
 
       {% block drawer %}
-      <q-drawer
-        v-model="g.visibleDrawer"
-        side="left"
-        :width="($q.screen.lt.md) ? 260 : 230"
-        show-if-above
-        :elevated="$q.screen.lt.md"
-      >
+      <q-drawer v-model="g.visibleDrawer" side="left" :width="($q.screen.lt.md) ? 260 : 230" show-if-above :elevated="$q.screen.lt.md">
         <lnbits-wallet-list></lnbits-wallet-list>
 
-        <lnbits-manage
-          :show-admin="'{{LNBITS_ADMIN_UI}}' == 'True'"
-          :show-node="'{{LNBITS_NODE_UI}}' == 'True'"
-        ></lnbits-manage>
+        <lnbits-manage :show-admin="'{{LNBITS_ADMIN_UI}}' == 'True'" :show-node="'{{LNBITS_NODE_UI}}' == 'True'"></lnbits-manage>
         <lnbits-extension-list class="q-pb-xl"></lnbits-extension-list>
       </q-drawer>
       {% endblock %} {% block page_container %}
       <q-page-container>
-        <q-page class="q-px-md q-py-lg" :class="{'q-px-lg': $q.screen.gt.xs}">
-          {% block page %}{% endblock %}
-        </q-page>
+        <q-page class="q-px-md q-py-lg" :class="{'q-px-lg': $q.screen.gt.xs}"> {% block page %}{% endblock %} </q-page>
       </q-page-container>
       {% endblock %} {% block footer %}
 
-      <q-footer
-        class="bg-transparent q-px-lg q-py-md"
-        :class="{'text-dark': !$q.dark.isActive}"
-      >
+      <q-footer class="bg-transparent q-px-lg q-py-md" :class="{'text-dark': !$q.dark.isActive}">
         <q-space class="q-py-lg lt-md"></q-space>
         <q-toolbar class="gt-sm">
           <q-toolbar-title class="text-caption">
             {{ SITE_TITLE }}, {{SITE_TAGLINE}}
             <br />
-            <small
-              v-text="$t('lnbits_version') + ': {{LNBITS_VERSION}}'"
-            ></small>
+            <small v-text="$t('lnbits_version') + ': {{LNBITS_VERSION}}'"></small>
           </q-toolbar-title>
           <q-space></q-space>
-          <q-btn
-            flat
-            dense
-            :color="($q.dark.isActive) ? 'white' : 'primary'"
-            type="a"
-            href="/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <q-btn flat dense :color="($q.dark.isActive) ? 'white' : 'primary'" type="a" href="/docs" target="_blank" rel="noopener noreferrer">
             <span v-text="$t('api_docs')"></span>
-            <q-tooltip
-              ><span v-text="$t('view_swagger_docs')"></span
-            ></q-tooltip>
+            <q-tooltip><span v-text="$t('view_swagger_docs')"></span></q-tooltip>
           </q-btn>
           <q-btn
             flat

@@ -3,7 +3,7 @@
     <h6 class="q-my-none q-mb-sm">User Management</h6>
 
     <div class="row">
-      <div class="col-md-6 col-sm-12 q-pr-sm">
+      <div class="col-md-12 col-sm-12 col-xs-12 q-pr-sm">
         <p>Admin Users</p>
         <q-input
           filled
@@ -31,6 +31,7 @@
         </div>
         <br />
       </div>
+      <!-- allowed user (삭제예정)) -->
       <div class="col-md-6 col-sm-12">
         <p>Allowed Users</p>
         <q-input
@@ -60,5 +61,161 @@
         <br />
       </div>
     </div>
+    <!-- 테이블 -->
+    <div>
+      <q-card
+        :style="$q.screen.lt.md ? {
+            background: $q.screen.lt.md ? 'none !important': ''
+            , boxShadow: $q.screen.lt.md ? 'none !important': ''
+            , marginTop: $q.screen.lt.md ? '0px !important': ''
+          } : ''"
+      >
+        <q-card-section>
+          <!-- account table (for kyc) -->
+          <q-table
+            dense
+            flat
+            :data="accountsOmitter"
+            :row-key="accountsTableRowKey"
+            :columns="accountsTable.columns"
+            no-data-label="no data"
+            :filter="accountsTable.search"
+            :loading="accountsTable.loading"
+            :hide-header="mobileSimple"
+            :hide-bottom="mobileSimple"
+            @request="fetchAccounts"
+          >
+            <!-- header -->
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th auto-width></q-th>
+                <q-th
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
+                  v-text="col.label"
+                ></q-th>
+              </q-tr>
+            </template>
+            <!-- body -->
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <!-- column-1 -->
+                <q-td auto-width class="text-center">
+                  <q-icon
+                    v-if="props.row.status == 'verified'"
+                    name="check"
+                    color="green"
+                    @click="verifyUser(props.row)"
+                  ></q-icon>
+                  <q-icon
+                    v-else
+                    name="settings_ethernet"
+                    color="grey"
+                    @click="verifyUser(props.row)"
+                  >
+                    <q-tooltip><span v-text="$t('pending')"></span></q-tooltip>
+                  </q-icon>
+                </q-td>
+                <!-- column-2 -->
+                <q-td
+                  key="username"
+                  :props="props"
+                  style="white-space: normal; word-break: break-all"
+                >
+                  <span v-text="props.row.username"></span>
+                </q-td>
+                <!-- column-3 -->
+                <q-td
+                  key="verify"
+                  :props="props"
+                  style="white-space: normal; word-break: break-all"
+                >
+                  <q-btn
+                    size="sm"
+                    label="인증요청"
+                    color="primary"
+                    v-if="props.row.status == 'requested'"
+                    @click="verifyUser(props.row)"
+                  >
+                  </q-btn>
+                  <q-btn
+                    size="sm"
+                    label="인증완료"
+                    color="green"
+                    v-if="props.row.status == 'verified'"
+                    @click="removeKycUser(props.row)"
+                  >
+                  </q-btn>
+                  <q-btn
+                    size="sm"
+                    label="인증필요"
+                    color="grey"
+                    v-if="props.row.status == 'required'"
+                    @click="verifyUser(props.row)"
+                  >
+                  </q-btn>
+                </q-td>
+              </q-tr>
+              <!-- dialog -->
+            </template>
+          </q-table>
+        </q-card-section>
+      </q-card>
+    </div>
   </q-card-section>
+  <!-- dialog -->
+  <q-dialog v-model="kycConfirmDialog" persistent :auto-close="true">
+    <q-card>
+      <q-card-section>
+        <div style="text-align: center">
+          <h3>KYC Verify</h3>
+        </div>
+
+        <div v-if="kycUserInfo.username">
+          <b> NAME : </b>
+          <span v-text="kycUserInfo.username"></span>
+          <br />
+        </div>
+
+        <div v-if="kycUserInfo.id">
+          <b> ID : </b>
+          <span v-text="kycUserInfo.id"></span>
+          <br />
+        </div>
+
+        <div v-if="kycUserInfo.email">
+          <b> EMAIL : </b>
+          <span v-text="kycUserInfo.email"></span>
+          <br />
+        </div>
+
+        <br />
+        <img
+          width="300px"
+          v-if="kycUserInfo.picture"
+          :src="kycUserInfo.picture"
+          alt="이미지 설명"
+        />
+        <br />
+      </q-card-section>
+
+      <q-card-section>
+        <div style="display: flex; align-items: flex">
+          <div style="flex: 8"></div>
+          <div style="flex: 1">
+            <q-btn
+              flat
+              label="Cancel"
+              color="primary"
+              @click="kycConfirmDialog = false"
+            />
+          </div>
+          <div style="flex: 1">
+            <q-btn flat label="Confirm" color="positive" @click="addKycUser" />
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </q-tab-panel>

@@ -138,6 +138,15 @@ window.LNbits = {
         wallet.inkey
       )
     },
+    getAccounts: function () {
+      return this.request('get', '/admin/api/v1/kyc')
+    },
+    verifyKyc: function (id) {
+      return this.request(
+        'put',
+        '/admin/api/v1/kyc/?user_id=' + id + '&verified=true'
+      )
+    },
     getPayment: function (wallet, paymentHash) {
       return this.request(
         'get',

@@ -248,8 +248,17 @@ async def check_user_exists(
     else:
         raise HTTPException(HTTPStatus.UNAUTHORIZED, "Missing user ID or access token.")
 
-    if not account or not settings.is_user_allowed(account.id):
-        raise HTTPException(HTTPStatus.UNAUTHORIZED, "User not allowed.")
+    
+    # KYC 인증 전 허용할 패스 목록
+    allowed_paths = ["/account", "/api/v1/auth", "/api/v1/auth/update", "/api/v1/auth/kyc"]
+
+    # KYC 인증 전 허용할 패스 목록에 포함되어 있지 않으면 KYC 인증 필요
+    if r.url.path not in allowed_paths:
+
+        # KYC 인증 형태로 변경
+        if not account or not settings.is_user_allowed(account.id):
+            # raise HTTPException(HTTPStatus.UNAUTHORIZED, "User not allowed.")
+            raise HTTPException("error-kyc", "KYC Required.")
 
     user = await get_user(account.id)
     assert user, "User not found for account."

@@ -4,15 +4,16 @@
     <q-card class="q-pa-lg">
       <q-card-section class="q-pa-none">
         <center>
-          <h3 class="q-my-none">Error</h3>
+          <h4 class="q-my-none" v-text="$t('kyc_required')"></h4>
           <br />
-          <q-icon name="warning" class="text-grey" style="font-size: 20rem"></q-icon>
-
-          <h5 class="q-my-none">{{ err }}</h5>
-          <h5 class="q-my-none">흠</h5>
-          <h4>If you believe this shouldn't be an error please bring it up on https://t.me/lnbits</h4>
+          <q-icon name="warning" class="text-grey" style="font-size: 10rem"></q-icon>
+          <!-- <h5 class="q-my-none">{{ err }}</h5> -->
+          <!-- <h5 class="q-my-none">KYC </h5> -->
+          <h5 v-text="$t('kyc_required_desc')"></h5>
           <br />
-          <q-btn @click="goBack" color="grey" outline label="Back" class="full-width"></q-btn>
+          <q-btn @click="goAccount" color="primary" outline :label="$t('go_to_account')" class="full-width"></q-btn>
+          <br />
+          <br />
         </center>
       </q-card-section>
     </q-card>
@@ -25,20 +26,12 @@
       el: '#vue',
       mixins: [windowMixin],
       data: function () {
-        return {
-          err2: ''
-        }
+        return {}
       },
       methods: {
-        goBack: function () {
-          window.history.back()
-        },
         goAccount: function () {
           window.location.href = '/account'
         }
-      },
-      created: function () {
-        this.err2 = '{{err}}'
       }
     })
   </script>

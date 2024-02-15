@@ -509,7 +509,6 @@ def register_exception_handlers(app: FastAPI):
         logger.error(f"RequestValidationError: {str(exc)}")
         # Only the browser sends "text/html" request
         # not fail proof, but everything else get's a JSON response
-
         if (
             request.headers
             and "accept" in request.headers
@@ -545,13 +544,22 @@ def register_exception_handlers(app: FastAPI):
                 )
                 return response
 
-            return template_renderer().TemplateResponse(
-                "error.html",
-                {
-                    "request": request,
-                    "err": f"HTTP Error {exc.status_code}: {exc.detail}",
-                },
-            )
+            if(exc.status_code == 'error-kyc'):
+                return template_renderer().TemplateResponse(
+                    "error-kyc.html",
+                    {
+                        "request": request,
+                        "err": f"HTTP Error {exc.status_code}: {exc.detail}",
+                    },
+                )
+            else:
+                return template_renderer().TemplateResponse(
+                    "error.html",
+                    {
+                        "request": request,
+                        "err": f"HTTP Error {exc.status_code}: {exc.detail}",
+                    },
+                )
 
         return JSONResponse(
             status_code=exc.status_code,

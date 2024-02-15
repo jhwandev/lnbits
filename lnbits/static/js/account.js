@@ -6,6 +6,7 @@ new Vue({
       user: null,
       hasUsername: false,
       showUserId: false,
+      kycStatus: null,
       tab: 'user',
       passwordData: {
         show: false,
@@ -16,6 +17,33 @@ new Vue({
     }
   },
   methods: {
+    registerForKyc: async function () {
+      const completedMessage = this.$t('kyc_request_completed')
+      const requestMessage = this.$t('kyc_request_dialog')
+      LNbits.utils.confirmDialog(requestMessage).onOk(async () => {
+        try {
+          const {data} = await LNbits.api.request(
+            'PUT',
+            '/api/v1/auth/kyc',
+            null,
+            {
+              user_id: this.user.id,
+              username: this.user.username,
+              email: this.user.email,
+              config: this.user.config
+            }
+          )
+          this.kycStatus = data.config.kyc_status
+          this.$q.notify({
+            type: 'positive',
+            message: completedMessage
+          })
+        } catch (e) {
+          LNbits.utils.notifyApiError(e)
+        }
+      })
+    },
+
     activeLanguage: function (lang) {
       return window.i18n.locale === lang
     },
@@ -90,6 +118,8 @@ new Vue({
       const {data} = await LNbits.api.getAuthenticatedUser()
       this.user = data
       this.hasUsername = !!data.username
+      this.kycStatus = data.config.kyc_status
+
       if (!this.user.config) this.user.config = {}
     } catch (e) {
       LNbits.utils.notifyApiError(e)

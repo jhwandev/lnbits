@@ -3,6 +3,65 @@ new Vue({
   mixins: [windowMixin],
   data: function () {
     return {
+      kycUserInfo: {
+        id: '',
+        username: '',
+        email: '',
+        status: '',
+        picture: ''
+      },
+      allowed_users: [],
+      deAllowed_users: [],
+      kycConfirmDialog: false,
+      mobileSimple: false,
+      payments: [],
+      paymentsTable: {
+        columns: [
+          {
+            name: 'time',
+            align: 'left',
+            label: this.$t('memo') + '/' + this.$t('date'),
+            field: 'date',
+            sortable: true
+          },
+          {
+            name: 'amount',
+            align: 'right',
+            label: this.$t('amount') + ' (' + LNBITS_DENOMINATION + ')',
+            field: 'sat',
+            sortable: true
+          }
+        ],
+        pagination: {
+          rowsPerPage: 10,
+          page: 1,
+          sortBy: 'time',
+          descending: true,
+          rowsNumber: 10
+        },
+        filter: null,
+        loading: false
+      },
+      accounts: [],
+      accountsTable: {
+        columns: [
+          {
+            name: 'username',
+            align: 'left',
+            label: '유저명',
+            field: 'username',
+            sortable: true
+          },
+          {
+            name: 'verify',
+            align: 'right',
+            label: 'KYC 상태 ',
+            field: 'verify',
+            sortable: true
+          }
+        ],
+        loading: false
+      },
       settings: {},
       logs: [],
       serverlogEnabled: false,
@@ -55,6 +114,7 @@ new Vue({
     this.getSettings()
     this.getAudit()
     this.balance = +'{{ balance|safe }}'
+    this.fetchAccounts()
   },
   computed: {
     lnbitsVersion() {
@@ -65,9 +125,210 @@ new Vue({
     },
     updateAvailable() {
       return LNBITS_VERSION !== this.statusData.version
+    },
+    formattedBalance: function () {
+      if (LNBITS_DENOMINATION != 'sats') {
+        return this.balance / 100
+      } else {
+        return LNbits.utils.formatSat(this.balance || this.g.wallet.sat)
+      }
+    },
+    formattedFiatBalance() {
+      if (this.fiatBalance) {
+        return LNbits.utils.formatCurrency(
+          this.fiatBalance.toFixed(2),
+          this.g.wallet.currency
+        )
+      }
+    },
+    paymentsOmitter() {
+      if (this.$q.screen.lt.md && this.mobileSimple) {
+        return this.payments.length > 0 ? [this.payments[0]] : []
+      }
+      return this.payments
+    },
+    accountsOmitter() {
+      // if (this.$q.screen.lt.md && this.mobileSimple) {
+      //   return this.accounts.length > 0 ? [this.accounts[0]] : []
+      // }
+      return this.accounts
+    },
+    canPay: function () {
+      if (!this.parse.invoice) return false
+      return this.parse.invoice.sat <= this.balance
+    },
+    pendingPaymentsExist: function () {
+      return this.payments.findIndex(payment => payment.pending) !== -1
     }
   },
   methods: {
+    // KYC정보 - 인증 dialog
+    verifyUser: function (row) {
+      if (row.status === 'verified') {
+        this.$q.notify({
+          type: 'warning',
+          message: '이미 KYC 인증완료된 사용자입니다.',
+          icon: null
+        })
+      } else if (row.status === 'required') {
+        this.$q.notify({
+          type: 'warning',
+          message: '아직 KYC 인증 신청을 하지 않은 사용자 입니다'
+        })
+      } else {
+        this.kycConfirmDialog = true
+        this.kycUserInfo.id = row.id
+        this.kycUserInfo.username = row.username
+        this.kycUserInfo.email = row.email
+        this.kycUserInfo.status = row.status
+        this.kycUserInfo.picture = row.picture
+        this.kycUserInfo.row = row
+      }
+    },
+    // KYC Formdata - KYC 사용자 추가
+    addKycUser() {
+      if (this.kycUserInfo.row.status === 'requested') {
+        const allowed_users = this.formData.lnbits_allowed_users
+        if (!allowed_users.includes(this.kycUserInfo.id)) {
+          this.formData.lnbits_allowed_users = [
+            ...allowed_users,
+            this.kycUserInfo.id
+          ]
+        }
+        this.kycUserInfo.row.status = 'verified'
+        this.$q.notify({
+          type: 'positive',
+          message: `${this.kycUserInfo.username}님의 KYC 인증이 완료되었습니다.`,
+          icon: null
+        })
+      }
+    },
+    // KYC정보 - 인증취소
+    removeKycUser(row) {
+      if (row.status === 'verified') {
+        const allowed_users = this.formData.lnbits_allowed_users
+        if (allowed_users.includes(row.id)) {
+          LNbits.utils
+            .confirmDialog('해당 유저의 KYC 인증을 취소하시겠습니까?')
+            .onOk(() => {
+              // 1. formdata 에서 삭제
+              this.formData.lnbits_allowed_users = allowed_users.filter(
+                u => u !== row.id
+              )
+              // 2. deAllowed_users 에 추가
+              this.deAllowed_users.push(row.id)
+              // 3. row status 변경
+              row.status = 'required'
+              this.$q.notify({
+                type: 'success',
+                message: '해당 유저의 KYC 인증이 취소되었습니다.'
+              })
+            })
+        }
+
+        //fromdata 에서 삭제
+        this.removeKycUser(row.id)
+      }
+    },
+
+    // KYC정보 - 최종저장
+    updateKycUserStatus: async function () {
+      const allowed_users = this.formData.lnbits_allowed_users
+      const deAllowed_users = this.deAllowed_users
+
+      // allows_users - kyc status update (true)
+      for (let i = 0; i < allowed_users.length; i++) {
+        const user_id = allowed_users[i]
+        await LNbits.api
+          .request(
+            'PUT',
+            '/admin/api/v1/kyc/' +
+              this.g.user.wallets[0].adminkey +
+              '?user_id=' +
+              user_id +
+              '&verified=true'
+          )
+          .then(response => {})
+          .catch(err => {
+            LNbits.utils.notifyApiError(err)
+          })
+      }
+
+      // deAllowed_users - kyc status update (false)
+      for (let i = 0; i < deAllowed_users.length; i++) {
+        const user_id = deAllowed_users[i]
+        await LNbits.api
+          .request(
+            'PUT',
+            '/admin/api/v1/kyc/' +
+              this.g.user.wallets[0].adminkey +
+              '?user_id=' +
+              user_id +
+              '&verified=false'
+          )
+          .then(response => {})
+          .catch(err => {
+            LNbits.utils.notifyApiError(err)
+          })
+      }
+      this.fetchAccounts()
+    },
+
+    // Account(KYC 포함) 조회
+    fetchAccounts: function (props) {
+      return LNbits.api
+        .getAccounts()
+        .then(response => {
+          this.accountsTable.loading = false
+          // this.accountsTable.pagination.rowsNumber = response.data.total
+          const accountsArr = []
+          this.accounts = response.data.map(obj => {
+            const status = obj.config.kyc_status
+            const picture = obj.config.picture
+            const email = obj.email
+            const row = {
+              id: obj.id,
+              username: obj.username,
+              status: status,
+              email: email,
+              picture: picture
+            }
+            accountsArr.push(row)
+          })
+          this.accounts = accountsArr
+        })
+        .catch(err => {
+          this.accountsTable.loading = false
+          LNbits.utils.notifyApiError(err)
+        })
+    },
+    accountsTableRowKey: function (row) {
+      return row.id
+    },
+    showChart: function () {
+      this.paymentsChart.show = true
+      LNbits.api
+        .request(
+          'GET',
+          '/api/v1/payments/history?group=' + this.paymentsChart.group.value,
+          this.g.wallet.adminkey
+        )
+        .then(response => {
+          this.$nextTick(() => {
+            if (this.paymentsChart.instance) {
+              this.paymentsChart.instance.destroy()
+            }
+            this.paymentsChart.instance = generateChart(
+              this.$refs.canvas,
+              response.data
+            )
+          })
+        })
+        .catch(err => {
+          LNbits.utils.notifyApiError(err)
+          this.paymentsChart.show = false
+        })
+    },
     addAdminUser() {
       let addUser = this.formAddAdmin
       let admin_users = this.formData.lnbits_admin_users
@@ -280,6 +541,8 @@ new Vue({
             }`,
             icon: null
           })
+          // KYC user status update
+          this.updateKycUserStatus()
         })
         .catch(function (error) {
           LNbits.utils.notifyApiError(error)

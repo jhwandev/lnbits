@@ -83,6 +83,7 @@ class WalletTypeInfo:
 
 class UserConfig(BaseModel):
     email_verified: Optional[bool] = False
+    kyc_status: str = "required"
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     display_name: Optional[str] = None

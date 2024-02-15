@@ -29,6 +29,7 @@ from ..crud import (
     get_account,
     get_account_by_email,
     get_account_by_username_or_email,
+    get_kyc_status_by_user_id,
     get_user,
     update_account,
     update_user_password,
@@ -249,6 +250,34 @@ async def update(
     except Exception as e:
         logger.debug(e)
         raise HTTPException(HTTP_500_INTERNAL_SERVER_ERROR, "Cannot update user.")
+
+@auth_router.put("/api/v1/auth/kyc")
+async def request_kyc(
+    data: UpdateUser,
+    user: User = Depends(check_user_exists)
+) -> Optional[User]:
+    
+    data.config.kyc_status = 'requested'
+
+    try:
+        return await update_account(user.id, None, None, data.config)
+    except AssertionError as e:
+        raise HTTPException(HTTP_403_FORBIDDEN, str(e))
+    except Exception as e:
+        logger.debug(e)
+        raise HTTPException(HTTP_500_INTERNAL_SERVER_ERROR, "Cannot request KYC.")
+
+@auth_router.get("/api/v1/auth/kyc")
+async def get_kyc_status(
+    user: User = Depends(check_user_exists)
+) -> Optional[str]:
+    try:
+        return await get_kyc_status_by_user_id(user.id)
+    except AssertionError as e:
+        raise HTTPException(HTTP_403_FORBIDDEN, str(e))
+    except Exception as e:
+        logger.debug(e)
+        raise HTTPException(HTTP_500_INTERNAL_SERVER_ERROR, "Cannot get KYC status")
 
 
 @auth_router.put("/api/v1/auth/first_install")

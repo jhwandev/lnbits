@@ -125,6 +125,7 @@ async def update_account(
     username = user.username or username
     email = user.email or email
     extra = user_config or user.config
+    assert extra.kyc_status in ["requested", "verified", "required"], "Invalid KYC status."
 
     now = int(time())
     await db.execute(
@@ -163,6 +164,43 @@ async def get_account(
         user.config = UserConfig(**json.loads(row["extra"]))
     return user
 
+async def get_kyc_status_by_user_id(
+    user_id: str, conn: Optional[Connection] = None
+) -> Optional[str]:
+    row = await (conn or db).fetchone(
+        """
+           SELECT extra
+           FROM accounts WHERE id = ?
+        """,
+        (user_id,),
+    )
+    if row:
+        extra = json.loads(row["extra"])
+        return extra.get("kyc_status")
+    return None
+
+async def get_kyc_requests(
+    conn: Optional[Connection] = None,
+) -> List[User]:
+    rows = await (conn or db).fetchall(
+        """
+           SELECT id, email, username, created_at, updated_at, extra
+           FROM accounts ORDER BY updated_at desc
+        """
+    )
+
+    users = []
+    for row in rows:
+        user = User(**row)
+        if row["extra"]:
+            user.config = UserConfig(**json.loads(row["extra"]))
+        users.append(user)
+
+    # users = [User(**row) for row in rows]
+    # for user in users:
+    #     if user.extra:
+    #         user.config = UserConfig(**json.loads(user.extra))
+    return users
 
 async def delete_accounts_no_wallets(
     time_delta: int,
