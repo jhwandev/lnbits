@@ -253,10 +253,14 @@ async def update(
 
 @auth_router.put("/api/v1/auth/kyc")
 async def request_kyc(
+    data: UpdateUser,
     user: User = Depends(check_user_exists)
 ) -> Optional[User]:
+    
+    data.config.kyc_status = 'requested'
+
     try:
-        return await update_account(user.id, None, None, UserConfig(kyc_status="requested"))
+        return await update_account(user.id, None, None, data.config)
     except AssertionError as e:
         raise HTTPException(HTTP_403_FORBIDDEN, str(e))
     except Exception as e:

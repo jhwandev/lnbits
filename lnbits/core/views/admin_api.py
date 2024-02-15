@@ -22,7 +22,7 @@ from lnbits.server import server_restart
 from lnbits.settings import AdminSettings, UpdateSettings, settings
 
 from .. import core_app_extra
-from ..crud import delete_admin_settings, get_admin_settings, update_admin_settings, get_kyc_requests, update_account
+from ..crud import delete_admin_settings, get_admin_settings, update_admin_settings, get_kyc_requests, update_account, get_account
 
 admin_router = APIRouter()
 
@@ -36,9 +36,12 @@ async def api_get_kyc_requests():
 @admin_router.put("/admin/api/v1/kyc/{id}",
     dependencies=[Depends(check_admin)],)
 async def api_verify_kyc_request(user_id: str, verified: bool = True):
-    await update_account(user_id, None, None, UserConfig(kyc_status="verified" if verified else "required"))
-    return {"status": "Success"}
+    
+    user = await get_account(user_id)
+    user.config.kyc_status = "verified" if verified else "required"
 
+    await update_account(user_id, None, None, user.config)
+    return {"status": "Success"}
 
 @admin_router.get(
     "/admin/api/v1/audit",
