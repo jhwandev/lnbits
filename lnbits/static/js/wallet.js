@@ -572,8 +572,10 @@ new Vue({
       }
 
       let msatAmount = invoice.human_readable_part.amount
-      let feeRate = Number(this.lnbitsServiceFee)
+
+      let feeRate = Number(this.lnbitsServiceFee) / 100
       let maxFee = Number(this.lnbitsServiceFeeMax)
+
       let serviceFee = Math.floor((msatAmount / 1000) * feeRate)
 
       // 최대 수수료 제한
@@ -587,6 +589,9 @@ new Vue({
       }
 
       let totalSat = msatAmount / 1000 + serviceFee
+
+      console.log(totalSat)
+
       this.updatePaymentBalance(totalSat)
 
       let balanceAfterPayment = Number(this.balance) - Number(totalSat)
