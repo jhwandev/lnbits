@@ -185,9 +185,8 @@ async def get_kyc_requests(
     rows = await (conn or db).fetchall(
         """
            SELECT id, email, username, created_at, updated_at, extra
-           FROM accounts WHERE extra LIKE ?
-        """,
-        ('%"kyc_status": "requested"%',),
+           FROM accounts ORDER BY updated_at desc
+        """
     )
 
     users = []
