@@ -6,42 +6,17 @@ new Vue({
       kycUserInfo: {
         id: '',
         username: '',
+        name: '',
         email: '',
         status: '',
-        picture: ''
+        picture: '',
+        row: null
       },
       allowed_users: [],
       deAllowed_users: [],
       kycConfirmDialog: false,
       mobileSimple: false,
-      payments: [],
-      paymentsTable: {
-        columns: [
-          {
-            name: 'time',
-            align: 'left',
-            label: this.$t('memo') + '/' + this.$t('date'),
-            field: 'date',
-            sortable: true
-          },
-          {
-            name: 'amount',
-            align: 'right',
-            label: this.$t('amount') + ' (' + LNBITS_DENOMINATION + ')',
-            field: 'sat',
-            sortable: true
-          }
-        ],
-        pagination: {
-          rowsPerPage: 10,
-          page: 1,
-          sortBy: 'time',
-          descending: true,
-          rowsNumber: 10
-        },
-        filter: null,
-        loading: false
-      },
+
       accounts: [],
       accountsTable: {
         columns: [
@@ -179,6 +154,7 @@ new Vue({
         this.kycConfirmDialog = true
         this.kycUserInfo.id = row.id
         this.kycUserInfo.username = row.username
+        this.kycUserInfo.name = row.name
         this.kycUserInfo.email = row.email
         this.kycUserInfo.status = row.status
         this.kycUserInfo.picture = row.picture
@@ -275,7 +251,7 @@ new Vue({
     },
 
     // Account(KYC 포함) 조회
-    fetchAccounts: function (props) {
+    fetchAccounts: function () {
       return LNbits.api
         .getAccounts()
         .then(response => {
@@ -287,12 +263,18 @@ new Vue({
               const email = obj.email
               const status = obj.config.kyc_status
               const picture = obj.config.picture
+              let kycName = ''
+              if (obj.config.first_name || obj.config.last_name) {
+                kycName = obj.config.first_name + ' ' + obj.config.last_name
+              }
+
               const row = {
                 id: obj.id,
                 username: obj.username,
                 status: status,
                 email: email,
-                picture: picture
+                picture: picture,
+                name: kycName
               }
               accountsArr.push(row)
             }

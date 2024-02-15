@@ -173,8 +173,14 @@
         </div>
 
         <div v-if="kycUserInfo.username">
-          <b> NAME : </b>
+          <b> USERNAME : </b>
           <span v-text="kycUserInfo.username"></span>
+          <br />
+        </div>
+
+        <div v-if="kycUserInfo.name">
+          <b> NAME : </b>
+          <span v-text="kycUserInfo.name"></span>
           <br />
         </div>
 
