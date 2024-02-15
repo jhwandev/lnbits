@@ -34,7 +34,6 @@ new Vue({
             }
           )
           this.kycStatus = data.config.kyc_status
-          debugger
           this.$q.notify({
             type: 'positive',
             message: completedMessage

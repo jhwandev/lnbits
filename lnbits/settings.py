@@ -42,7 +42,8 @@ class UsersSettings(LNbitsSettings):
 
     @property
     def new_accounts_allowed(self) -> bool:
-        return self.lnbits_allow_new_accounts and len(self.lnbits_allowed_users) == 0
+        return True
+        # return self.lnbits_allow_new_accounts and len(self.lnbits_allowed_users) == 0
 
 
 class ExtensionsSettings(LNbitsSettings):
