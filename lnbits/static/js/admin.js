@@ -283,17 +283,19 @@ new Vue({
           // this.accountsTable.pagination.rowsNumber = response.data.total
           const accountsArr = []
           this.accounts = response.data.map(obj => {
-            const status = obj.config.kyc_status
-            const picture = obj.config.picture
-            const email = obj.email
-            const row = {
-              id: obj.id,
-              username: obj.username,
-              status: status,
-              email: email,
-              picture: picture
+            if (obj.config) {
+              const email = obj.email
+              const status = obj.config.kyc_status
+              const picture = obj.config.picture
+              const row = {
+                id: obj.id,
+                username: obj.username,
+                status: status,
+                email: email,
+                picture: picture
+              }
+              accountsArr.push(row)
             }
-            accountsArr.push(row)
           })
           this.accounts = accountsArr
         })
