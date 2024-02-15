@@ -13,8 +13,16 @@
         <div class="row">
           <div class="col">
             <q-tabs v-model="tab" align="justify">
-              <q-tab name="user" :label="$t('account_settings')" @update="val => tab = val.name"></q-tab>
-              <q-tab name="theme" :label="$t('look_and_feel')" @update="val => tab = val.name"></q-tab>
+              <q-tab
+                name="user"
+                :label="$t('account_settings')"
+                @update="val => tab = val.name"
+              ></q-tab>
+              <q-tab
+                name="theme"
+                :label="$t('look_and_feel')"
+                @update="val => tab = val.name"
+              ></q-tab>
             </q-tabs>
             <q-tab-panels v-model="tab">
               <q-tab-panel name="user">
@@ -73,7 +81,14 @@
                       :label="$t('change_password')"
                     >
                     </q-btn>
-                    <q-btn @click="passwordData.show = false" :label="$t('back')" outline unelevated color="grey" class="float-right"></q-btn>
+                    <q-btn
+                      @click="passwordData.show = false"
+                      :label="$t('back')"
+                      outline
+                      unelevated
+                      color="grey"
+                      class="float-right"
+                    ></q-btn>
                   </q-card-section>
                 </div>
                 <div v-else>
@@ -87,29 +102,81 @@
                   <q-separator></q-separator>
 
                   <q-card-section>
-                    <q-input v-model="user.id" :label="$t('user_id')" filled dense readonly :type="showUserId ? 'text': 'password'" class="q-mb-md"
-                      ><q-btn @click="showUserId = !showUserId" dense flat :icon="showUserId ? 'visibility_off' : 'visibility'" color="grey"></q-btn>
+                    <q-input
+                      v-model="user.id"
+                      :label="$t('user_id')"
+                      filled
+                      dense
+                      readonly
+                      :type="showUserId ? 'text': 'password'"
+                      class="q-mb-md"
+                      ><q-btn
+                        @click="showUserId = !showUserId"
+                        dense
+                        flat
+                        :icon="showUserId ? 'visibility_off' : 'visibility'"
+                        color="grey"
+                      ></q-btn>
                     </q-input>
-                    <q-input v-model="user.username" :label="$t('username')" filled dense :readonly="hasUsername" class="q-mb-md"> </q-input>
-                    <q-input v-model="user.email" :label="$t('email')" filled dense readonly class="q-mb-md"> </q-input>
+                    <q-input
+                      v-model="user.username"
+                      :label="$t('username')"
+                      filled
+                      dense
+                      :readonly="hasUsername"
+                      class="q-mb-md"
+                    >
+                    </q-input>
+                    <q-input
+                      v-model="user.email"
+                      :label="$t('email')"
+                      filled
+                      dense
+                      readonly
+                      class="q-mb-md"
+                    >
+                    </q-input>
                     <div v-if="!user.email" class="row"></div>
                     <div v-if="!user.email" class="row">
-                      {% if "google-auth" in LNBITS_AUTH_METHODS or "github-auth" in LNBITS_AUTH_METHODS %}
-                      <div class="col q-pa-sm text-h6"><span v-text="$t('verify_email')"></span>:</div>
+                      {% if "google-auth" in LNBITS_AUTH_METHODS or
+                      "github-auth" in LNBITS_AUTH_METHODS %}
+                      <div class="col q-pa-sm text-h6">
+                        <span v-text="$t('verify_email')"></span>:
+                      </div>
                       {%endif%} {% if "google-auth" in LNBITS_AUTH_METHODS %}
                       <div class="col q-pa-sm">
-                        <q-btn :href="`/api/v1/auth/google?user_id=${user.id}`" type="a" outline no-caps rounded color="grey" class="full-width">
+                        <q-btn
+                          :href="`/api/v1/auth/google?user_id=${user.id}`"
+                          type="a"
+                          outline
+                          no-caps
+                          rounded
+                          color="grey"
+                          class="full-width"
+                        >
                           <q-avatar size="32px" class="q-mr-md">
-                            <q-img :src="'{{ static_url_for('static', 'images/google-logo.png') }}'"></q-img>
+                            <q-img
+                              :src="'{{ static_url_for('static', 'images/google-logo.png') }}'"
+                            ></q-img>
                           </q-avatar>
                           <div>Google</div>
                         </q-btn>
                       </div>
                       {%endif%} {% if "github-auth" in LNBITS_AUTH_METHODS %}
                       <div class="col q-pa-sm">
-                        <q-btn :href="`/api/v1/auth/github?user_id=${user.id}`" type="a" outline no-caps color="grey" rounded class="full-width">
+                        <q-btn
+                          :href="`/api/v1/auth/github?user_id=${user.id}`"
+                          type="a"
+                          outline
+                          no-caps
+                          color="grey"
+                          rounded
+                          class="full-width"
+                        >
                           <q-avatar size="32px" class="q-mr-md">
-                            <q-img :src="'{{ static_url_for('static', 'images/github-logo.png') }}'"></q-img>
+                            <q-img
+                              :src="'{{ static_url_for('static', 'images/github-logo.png') }}'"
+                            ></q-img>
                           </q-avatar>
                           <div>GitHub</div>
                         </q-btn>
@@ -119,11 +186,45 @@
                   </q-card-section>
 
                   <q-card-section v-if="user.config">
-                    <q-input v-model="user.config.first_name" :label="$t('first_name')" filled dense class="q-mb-md"> </q-input>
-                    <q-input v-model="user.config.last_name" :label="$t('last_name')" filled dense class="q-mb-md"> </q-input>
-                    <q-input v-model="user.config.provider" :label="$t('auth_provider')" filled dense readonly class="q-mb-md"> </q-input>
-                    <q-input v-model="user.config.picture" :label="$t('picture')" filled dense class="q-mb-md"> </q-input>
-                    <q-img v-if="user.config.picture" style="max-width: 300px" :src="user.config.picture" class="float-left"></q-img>
+                    <q-input
+                      v-model="user.config.first_name"
+                      :label="$t('first_name')"
+                      filled
+                      dense
+                      class="q-mb-md"
+                    >
+                    </q-input>
+                    <q-input
+                      v-model="user.config.last_name"
+                      :label="$t('last_name')"
+                      filled
+                      dense
+                      class="q-mb-md"
+                    >
+                    </q-input>
+                    <q-input
+                      v-model="user.config.provider"
+                      :label="$t('auth_provider')"
+                      filled
+                      dense
+                      readonly
+                      class="q-mb-md"
+                    >
+                    </q-input>
+                    <q-input
+                      v-model="user.config.picture"
+                      :label="$t('picture')"
+                      filled
+                      dense
+                      class="q-mb-md"
+                    >
+                    </q-input>
+                    <q-img
+                      v-if="user.config.picture"
+                      style="max-width: 300px"
+                      :src="user.config.picture"
+                      class="float-left"
+                    ></q-img>
                   </q-card-section>
                   <!-- <q-separator></q-separator> -->
                   <q-card-section>
@@ -138,7 +239,13 @@
                       class="full-width"
                     ></q-btn>
                     <!-- 계정 업데이트 버튼 -->
-                    <q-btn style="margin-top: 10px" @click="updateAccount" unelevated color="primary" class="full-width">
+                    <q-btn
+                      style="margin-top: 10px"
+                      @click="updateAccount"
+                      unelevated
+                      color="primary"
+                      class="full-width"
+                    >
                       <span v-text="$t('update_account')"></span>
                     </q-btn>
                     <!-- KYC -->
@@ -152,10 +259,24 @@
                     >
                       <span v-text="$t('register_for_kyc')"></span>
                     </q-btn>
-                    <q-btn v-else if="kycStatus==='requested'" style="margin-top: 10px" unelevated color="grey" class="full-width" disabled>
+                    <q-btn
+                      v-if="kycStatus==='requested'"
+                      style="margin-top: 10px"
+                      unelevated
+                      color="grey"
+                      class="full-width"
+                      disabled
+                    >
                       <span v-text="$t('pending_for_kyc')"></span>
                     </q-btn>
-                    <q-btn v-else if="kycStatus==='verified'" style="margin-top: 10px" unelevated color="grey" class="full-width" disabled>
+                    <q-btn
+                      v-if="kycStatus==='verified'"
+                      style="margin-top: 10px"
+                      unelevated
+                      color="green"
+                      class="full-width"
+                      disabled
+                    >
                       <span v-text="$t('kyc_verified')"></span>
                     </q-btn>
                     <!-- KYC  -->
@@ -166,12 +287,27 @@
                 <div class="row q-mb-md">
                   <div class="col-4"><span v-text="$t('language')"></span></div>
                   <div class="col-8">
-                    <q-btn-dropdown dense flat round size="sm" icon="language" class="q-pl-md">
+                    <q-btn-dropdown
+                      dense
+                      flat
+                      round
+                      size="sm"
+                      icon="language"
+                      class="q-pl-md"
+                    >
                       <q-list v-for="(lang, index) in g.langs" :key="index">
-                        <q-item clickable v-close-popup :active="activeLanguage(lang.value)" @click="changeLanguage(lang.value)"
+                        <q-item
+                          clickable
+                          v-close-popup
+                          :active="activeLanguage(lang.value)"
+                          @click="changeLanguage(lang.value)"
                           ><q-item-section>
-                            <q-item-label v-text="lang.display ?? lang.value.toUpperCase()"></q-item-label>
-                            <q-tooltip><span v-text="lang.label"></span></q-tooltip>
+                            <q-item-label
+                              v-text="lang.display ?? lang.value.toUpperCase()"
+                            ></q-item-label>
+                            <q-tooltip
+                              ><span v-text="lang.label"></span
+                            ></q-tooltip>
                           </q-item-section>
                         </q-item>
                       </q-list>
@@ -203,9 +339,23 @@
                       size="md"
                       ><q-tooltip>bitcoin</q-tooltip>
                     </q-btn>
-                    <q-btn v-if="g.allowedThemes.includes('mint')" dense flat @click="changeColor('mint')" icon="circle" color="green" size="md"
+                    <q-btn
+                      v-if="g.allowedThemes.includes('mint')"
+                      dense
+                      flat
+                      @click="changeColor('mint')"
+                      icon="circle"
+                      color="green"
+                      size="md"
                       ><q-tooltip>mint</q-tooltip> </q-btn
-                    ><q-btn v-if="g.allowedThemes.includes('autumn')" dense flat @click="changeColor('autumn')" icon="circle" color="brown" size="md"
+                    ><q-btn
+                      v-if="g.allowedThemes.includes('autumn')"
+                      dense
+                      flat
+                      @click="changeColor('autumn')"
+                      icon="circle"
+                      color="brown"
+                      size="md"
                       ><q-tooltip>autumn</q-tooltip>
                     </q-btn>
                     <q-btn
@@ -265,15 +415,27 @@
                     <span v-text="$t('toggle_darkmode')"></span>
                   </div>
                   <div class="col-8">
-                    <q-btn dense flat round @click="toggleDarkMode" :icon="($q.dark.isActive) ? 'brightness_3' : 'wb_sunny'" size="sm">
-                      <q-tooltip><span v-text="$t('toggle_darkmode')"></span></q-tooltip>
+                    <q-btn
+                      dense
+                      flat
+                      round
+                      @click="toggleDarkMode"
+                      :icon="($q.dark.isActive) ? 'brightness_3' : 'wb_sunny'"
+                      size="sm"
+                    >
+                      <q-tooltip
+                        ><span v-text="$t('toggle_darkmode')"></span
+                      ></q-tooltip>
                     </q-btn>
                   </div>
                 </div>
                 <div class="row q-mb-md" style="display: none">
                   <div class="col-4" v-text="$t('notifications')"></div>
                   <div class="col-8">
-                    <lnbits-notifications-btn v-if="g.user" pubkey="{{ WEBPUSH_PUBKEY }}"></lnbits-notifications-btn>
+                    <lnbits-notifications-btn
+                      v-if="g.user"
+                      pubkey="{{ WEBPUSH_PUBKEY }}"
+                    ></lnbits-notifications-btn>
                   </div>
                 </div>
               </q-tab-panel>

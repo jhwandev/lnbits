@@ -6,7 +6,7 @@ new Vue({
       user: null,
       hasUsername: false,
       showUserId: false,
-      kycStatus: null,
+      kycStatus: '',
       tab: 'user',
       passwordData: {
         show: false,
@@ -34,6 +34,7 @@ new Vue({
             }
           )
           this.kycStatus = data.config.kyc_status
+          debugger
           this.$q.notify({
             type: 'positive',
             message: completedMessage
@@ -118,7 +119,9 @@ new Vue({
       const {data} = await LNbits.api.getAuthenticatedUser()
       this.user = data
       this.hasUsername = !!data.username
+
       this.kycStatus = data.config.kyc_status
+      console.log(this.kycStatus)
 
       if (!this.user.config) this.user.config = {}
     } catch (e) {
