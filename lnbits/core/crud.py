@@ -148,7 +148,7 @@ async def update_account(
     assert user, "Updated account couldn't be retrieved"
     return user
 
-
+# 이거랑
 async def get_account(
     user_id: str, conn: Optional[Connection] = None
 ) -> Optional[User]:
@@ -281,7 +281,6 @@ async def get_account_by_username(
 
     return User(**row) if row else None
 
-
 async def get_account_by_email(
     email: str, conn: Optional[Connection] = None
 ) -> Optional[User]:
@@ -293,7 +292,12 @@ async def get_account_by_email(
         (email,),
     )
 
-    return User(**row) if row else None
+    user = User(**row) if row else None
+    if user and row["extra"]:
+        user.config = UserConfig(**json.loads(row["extra"]))
+    return user
+
+    # return User(**row) if row else None
 
 
 async def get_account_by_username_or_email(
