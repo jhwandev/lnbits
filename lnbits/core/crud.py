@@ -287,7 +287,7 @@ async def get_account_by_email(
 ) -> Optional[User]:
     row = await (conn or db).fetchone(
         """
-        SELECT id, username, email, created_at, updated_at
+        SELECT id, username, email, created_at, updated_at, extra
         FROM accounts WHERE email = ?
         """,
         (email,),
