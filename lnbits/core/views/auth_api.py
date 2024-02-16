@@ -130,6 +130,9 @@ async def handle_google_token(request: Request) -> RedirectResponse:
     try:
         with google_sso:
             userinfo = await google_sso.verify_and_process(request)
+            print('-----userinfo-----')
+            print(userinfo)
+
             assert userinfo is not None
             user_id = decrypt_internal_message(google_sso.state)
         request.session.pop("user", None)
@@ -318,6 +321,8 @@ async def _handle_sso_login(userinfo: OpenID, verified_user_id: Optional[str] = 
     user_config.email_verified = True
 
     account = await get_account_by_email(email)
+    print('-----get_account_by_email.account(email)-----')
+    print(account)
 
     if verified_user_id:
         if account:
@@ -328,6 +333,8 @@ async def _handle_sso_login(userinfo: OpenID, verified_user_id: Optional[str] = 
         redirect_path = "/account"
 
     if account:
+        print('-----update_account-----')
+        print(user_config)
         user = await update_account(account.id, email=email, user_config=user_config)
     else:
         if not settings.new_accounts_allowed:
