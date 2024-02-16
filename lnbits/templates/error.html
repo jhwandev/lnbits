@@ -6,13 +6,25 @@
         <center>
           <h3 class="q-my-none">Error</h3>
           <br />
-          <q-icon name="warning" class="text-grey" style="font-size: 20rem"></q-icon>
+          <q-icon
+            name="warning"
+            class="text-grey"
+            style="font-size: 20rem"
+          ></q-icon>
 
           <h5 class="q-my-none">{{ err }}</h5>
-          <h5 class="q-my-none">흠</h5>
-          <h4>If you believe this shouldn't be an error please bring it up on https://t.me/lnbits</h4>
+          <h4>
+            If you believe this shouldn't be an error please bring it up on
+            https://t.me/lnbits
+          </h4>
           <br />
-          <q-btn @click="goBack" color="grey" outline label="Back" class="full-width"></q-btn>
+          <q-btn
+            @click="goBack"
+            color="grey"
+            outline
+            label="Back"
+            class="full-width"
+          ></q-btn>
         </center>
       </q-card-section>
     </q-card>
