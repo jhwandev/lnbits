@@ -589,9 +589,6 @@ new Vue({
       }
 
       let totalSat = msatAmount / 1000 + serviceFee
-
-      console.log(totalSat)
-
       this.updatePaymentBalance(totalSat)
 
       let balanceAfterPayment = Number(this.balance) - Number(totalSat)
@@ -818,8 +815,6 @@ new Vue({
           this.payments = response.data.data.map(obj => {
             return LNbits.map.payment(obj)
           })
-
-          console.log(this.payments)
         })
         .catch(err => {
           this.paymentsTable.loading = false

@@ -118,9 +118,7 @@ new Vue({
       const {data} = await LNbits.api.getAuthenticatedUser()
       this.user = data
       this.hasUsername = !!data.username
-
       this.kycStatus = data.config.kyc_status
-      console.log(this.kycStatus)
 
       if (!this.user.config) this.user.config = {}
     } catch (e) {
