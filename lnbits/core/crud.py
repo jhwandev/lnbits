@@ -125,6 +125,10 @@ async def update_account(
     username = user.username or username
     email = user.email or email
     extra = user_config or user.config
+
+    if user.config.kyc_status:
+        extra.kyc_status = user.config.kyc_status
+    
     assert extra.kyc_status in ["requested", "verified", "required"], "Invalid KYC status."
 
     now = int(time())
