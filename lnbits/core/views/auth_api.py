@@ -316,6 +316,7 @@ async def _handle_sso_login(userinfo: OpenID, verified_user_id: Optional[str] = 
     redirect_path = "/wallet"
     user_config = UserConfig(**dict(userinfo))
     user_config.email_verified = True
+    account = await get_account_by_email(email)
 
     if verified_user_id:
         if account:
@@ -326,7 +327,7 @@ async def _handle_sso_login(userinfo: OpenID, verified_user_id: Optional[str] = 
         redirect_path = "/account"
 
     if account:
-        user_config.kyc_status = account.config.kyc_status or "required"
+        user_config.kyc_status = account.config.kyc_status
         user = await update_account(account.id, email=email, user_config=user_config)
     else:
         if not settings.new_accounts_allowed:
