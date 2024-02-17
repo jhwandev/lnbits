@@ -558,6 +558,7 @@
               type="text"
               :label="$t('unit')"
               :options="receive.units"
+              :readonly="receive.lnurl && receive.lnurl.fixed"
             ></q-select>
             <!-- <q-input
               ref="setAmount"
